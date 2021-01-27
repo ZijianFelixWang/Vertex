@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net5.0</TargetFramework>
+    <Platforms>AnyCPU;x64</Platforms>
+    <StartupObject>Vertex.Program</StartupObject>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <Authors>Zijian Wang</Authors>
+    <Version>0.1</Version>
+    <Description>Vertex (Vertex Evaluator-based Recursive auTomata for EXpress cellular calculation) Version 0.1</Description>
+    <Copyright>Copyright 2021 Zijian Wang. All rights reserved.</Copyright>
+    <PackageLicenseExpression>Copyright 2021 Zijian Wang. All rights reserved. This program and its source code are protected by trademark and other pending or existing intellectual property rights in the People's Republic of China and other countries/regions.</PackageLicenseExpression>
+    <SignAssembly>false</SignAssembly>
+    <ApplicationIcon>icon_512x512.ico</ApplicationIcon>
+    <PackageIcon>icon.png</PackageIcon>
+    <RepositoryUrl>127.0.0.1</RepositoryUrl>
+    <PackageTags>Vertex</PackageTags>
+    <PackageReleaseNotes>
+___ __                 _____               
+__ |  / /_____ __________  /______ ____  __
+__ | / / _  _ \__  ___/_  __/_  _ \__  |/_/
+__ |/ /  /  __/_  /    / /_  /  __/__&gt;  &lt;  
+_____/   \___/ /_/     \__/  \___/ /_/|_|  
+
+        === PROJECT VERTEX ===
+
+      Copyright 2021 Zijian Wang.
+         All rights reserved.
+
+Vertex (Vertex Evaluator-based Recursive automata Technology for EXpress cellular calculation) Version 0.1</PackageReleaseNotes>
+    <AssemblyVersion>0.0.1.0</AssemblyVersion>
+    <FileVersion>0.0.1.0</FileVersion>
+    <Company>Spridex</Company>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="icon\icon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

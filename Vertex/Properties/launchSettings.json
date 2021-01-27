@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Vertex": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\felix\\Documents\\projects\\Vertex\\Vertex\\ExampleEnv.xml",
+      "workingDirectory": "C:\\Users\\felix\\Documents\\projects\\Vertex\\Vertex",
+      "remoteDebugEnabled": false
+    }
+  }
+}
