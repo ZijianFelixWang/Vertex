@@ -19,7 +19,7 @@ namespace Vertex
                 switch (metadataNode.Attributes["key"].Value)
                 {
                     case "VertexVersion":
-                        if (float.Parse(metadataNode.Attributes["val"].Value) >= 0.2)
+                        if (float.Parse(metadataNode.Attributes["val"].Value) >= 0.3)
                         {
                             throw new NotSupportedException($"This environment profile requires Vertex version {metadataNode.Attributes["val"].Value} or higher.");
                         }
@@ -52,6 +52,20 @@ namespace Vertex
                             throw new FormatException("MultithreadingExecution property must be placed after CMSize property!");
                         }
                         env.Matrix.UseMultiThreading = bool.Parse(metadataNode.Attributes["val"].Value);
+                        break;
+
+                    case "MutationMethod":
+                        if (env.RulePool == null)
+                        {
+                            env.RulePool = new RulePool(512);   // fixed constant 512
+                        }
+                        env.RulePool.MutationMethod = metadataNode.Attributes["val"].Value.Trim().ToLower() switch
+                        {
+                            "flip" => MutationMethod.Flip,
+                            "random" => MutationMethod.Random,
+                            _ => throw new FormatException($"Unexpected MutationMethod \"{metadataNode.Attributes["val"].Value.Trim().ToLower()}\"")
+                        };
+
                         break;
 
                     default:

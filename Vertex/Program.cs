@@ -28,7 +28,7 @@ namespace Vertex
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Vertex (Vertex Evaluator-based Recursive automata Technology for EXpress cellular calculation) Version 0.1");
+            Console.WriteLine("Vertex (Vertex Evaluator-based Recursive automata Technology for EXpress cellular calculation) Version 0.2");
             Console.WriteLine("Copyright 2021 Zijian Wang. All rights reserved.");
             Console.WriteLine("The Vertex software and its resource files are protected by the copyright and other pending or existing intellectual property rights in the P.R.China and other countries/regions.");
 
@@ -128,8 +128,11 @@ namespace Vertex
              * rule is successful (typically not).
              */
 
-            // Initialize 
-            env.RulePool = new RulePool(512);   // Sorry but this is a fixed value.
+            // Initialize
+            if (env.RulePool == null)
+            {
+                env.RulePool = new RulePool(512);   // Sorry but this is a fixed value.
+            }
             env.Evaluator.ConfigCurrentRanking(0);
             env.Evaluator.ConfigMaxRanking((short)(env.Evaluator.AnswerList.Parameters.Count - 1));
 
@@ -158,13 +161,19 @@ namespace Vertex
             Console.Beep();
             Console.WriteLine();
             Console.WriteLine("-------------------------------------------------------------------");
+            ConsoleColor fgBak = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Green;
             Console.Write("Resulted rule= ");
             for (int i = 0; i < env.RulePool.RuleLength; i++)
             {
                 Console.Write(env.RulePool.GetLatest()[i] ? "1" : "0");
             }
+            Console.ForegroundColor = fgBak;
             Console.WriteLine();
+            Console.ForegroundColor = fgBak;
             Console.WriteLine("-------------------------------------------------------------------");
+            Console.WriteLine("Press ENTER key to close this window.");
+            Console.ReadLine();
         }
     }
 }

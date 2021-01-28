@@ -17,6 +17,7 @@ namespace Vertex
          */
 
         public readonly ushort RuleLength = 0;
+        public MutationMethod MutationMethod = MutationMethod.Flip;
 
         public static int GetTimeStamp()
         {
@@ -117,10 +118,17 @@ namespace Vertex
             if (RankingHistory[^1] > GetGreatest(RankingHistory).max)
             {
                 // Situation 1
-                Console.WriteLine("S_1");
+                ConsoleColor fgBak = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Advantage generation. Self-mutation.");
+                Console.ForegroundColor = fgBak;
 
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 int ToMutate = rand.Next(0, RuleLength);
                 bool MutateToWhat = rand.Next(0, 2) == 1;
+                Console.WriteLine($"Rule[{ToMutate}] mutates to {(MutateToWhat ? "1" : "0")}");
+                Console.ForegroundColor = fgBak;
+
                 ruleHistory.Add(ruleHistory[^1]);
                 ruleHistory[^1][ToMutate] = MutateToWhat;
             }
@@ -128,7 +136,10 @@ namespace Vertex
             if (RankingHistory[^1] == GetGreatest(RankingHistory).max)
             {
                 // Situation 2
-                Console.WriteLine("S_2");
+                ConsoleColor fgBak = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Equallivant generation. SPCV algorithm.");
+                Console.ForegroundColor = fgBak;
 
                 // Single-Point Crossover (SPCV) Algorithm:
                 // For Example: (NOT REALLY 512 LENGTH ARRAY)
@@ -146,7 +157,7 @@ namespace Vertex
                  */
 
                 int CrossoverPoint = rand.Next(1, RuleLength - 1);  // CVP
-                ConsoleColor fgBak = Console.ForegroundColor;
+                //ConsoleColor fgBak = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("CVP= " + CrossoverPoint);
                 Console.ForegroundColor = fgBak;
@@ -161,7 +172,7 @@ namespace Vertex
                 Console.ForegroundColor = fgBak;
                 Console.WriteLine();
 
-                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.Write("RH[^1]= ");
                 for (int i = 0; i < ruleHistory[^1].Length; i++)
                 {
@@ -177,7 +188,7 @@ namespace Vertex
                     child[i] = ruleHistory[GetGreatest(RankingHistory).i][i];
                     Console.Write(child[i] ? 1 : 0);
                 }
-                Console.ForegroundColor = ConsoleColor.DarkMagenta;
+                Console.ForegroundColor = ConsoleColor.Magenta;
                 for (int i = CrossoverPoint; i < RuleLength; i++)
                 {
                     child[i] = ruleHistory[^1][i];
@@ -191,16 +202,25 @@ namespace Vertex
             if (RankingHistory[^1] < GetGreatest(RankingHistory).max)
             {
                 // Situation 3
-                Console.WriteLine("S_3");
+                ConsoleColor fgBak = Console.ForegroundColor;
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Disadvantage generation. Max-mutation");
+                Console.ForegroundColor = fgBak;
 
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 int ToMutate = rand.Next(0, RuleLength);
                 bool MutateToWhat = rand.Next(0, 2) == 1;
+                Console.WriteLine($"Rule[{ToMutate}] mutates to {(MutateToWhat ? "1" : "0")}");
                 ruleHistory.Add(ruleHistory[GetGreatest(RankingHistory).i]);
                 ruleHistory[^1][ToMutate] = MutateToWhat;
             }
 
             return ruleHistory[^1];
         }
+    }
 
+    enum MutationMethod
+    {
+        Flip, Random
     }
 }
