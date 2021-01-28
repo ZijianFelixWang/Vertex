@@ -125,7 +125,17 @@ namespace Vertex
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 int ToMutate = rand.Next(0, RuleLength);
-                bool MutateToWhat = rand.Next(0, 2) == 1;
+                bool MutateToWhat;
+                if (MutationMethod == MutationMethod.Flip)
+                {
+                    MutateToWhat = !ruleHistory[^1][ToMutate];
+                }
+                else
+                {
+                    // MutationMethod == MutationMethod.Random
+                    MutateToWhat = rand.Next(0, 2) == 1;
+                }
+
                 Console.WriteLine($"Rule[{ToMutate}] mutates to {(MutateToWhat ? "1" : "0")}");
                 Console.ForegroundColor = fgBak;
 
@@ -209,7 +219,18 @@ namespace Vertex
 
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 int ToMutate = rand.Next(0, RuleLength);
-                bool MutateToWhat = rand.Next(0, 2) == 1;
+
+                bool MutateToWhat;
+                if (MutationMethod == MutationMethod.Flip)
+                {
+                    MutateToWhat = !ruleHistory[^1][ToMutate];
+                }
+                else
+                {
+                    // MutationMethod == MutationMethod.Random
+                    MutateToWhat = rand.Next(0, 2) == 1;
+                }
+
                 Console.WriteLine($"Rule[{ToMutate}] mutates to {(MutateToWhat ? "1" : "0")}");
                 ruleHistory.Add(ruleHistory[GetGreatest(RankingHistory).i]);
                 ruleHistory[^1][ToMutate] = MutateToWhat;
