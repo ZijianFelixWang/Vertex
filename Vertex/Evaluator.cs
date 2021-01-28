@@ -445,7 +445,7 @@ namespace Vertex
                 throw new ArgumentNullException(nameof(IODefinition));
             }
 
-            _ = RulePoolDefinition.Produce(RankingHistory);
+            //_ = RulePoolDefinition.Produce(RankingHistory);
             Console.Write("Evaluating rule: ");
             for (int i = 0; i < RulePoolDefinition.RuleLength; i++)
             {
@@ -604,6 +604,8 @@ namespace Vertex
                 }
                 RankingHistory.Add(currentRanking);
                 Console.WriteLine("RH[^1]= " + RankingHistory[^1]);
+                RulePoolDefinition.ruleHistory.Add(RulePoolDefinition.GetLatest());
+                Console.WriteLine("Rule registered to rule history.");
             }
 
             // Evaluate() done. Returns success or not to caller.

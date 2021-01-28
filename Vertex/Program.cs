@@ -16,6 +16,8 @@ _____/   \___/ /_/     \__/  \___/ /_/|_|
 // Debug tabs... DISABLE MASTER TAB WHEN PACKAGING...
 #define __DEBUG_MODE__  // Master tab
 // #define __SHOW_COMPLETE_XML__
+//#define __FORCE_TO_FAIL__
+//#define __PRINT_UNSUCCESSFUL_CURRULE__
 
 using System;
 using System.Xml;
@@ -28,6 +30,7 @@ namespace Vertex
     {
         static void Main(string[] args)
         {
+            Console.Title = "Vertex v0.2";
             Console.WriteLine("Vertex (Vertex Evaluator-based Recursive automata Technology for EXpress cellular calculation) Version 0.2");
             Console.WriteLine("Copyright 2021 Zijian Wang. All rights reserved.");
             Console.WriteLine("The Vertex software and its resource files are protected by the copyright and other pending or existing intellectual property rights in the P.R.China and other countries/regions.");
@@ -108,6 +111,7 @@ namespace Vertex
 
             // Now starts the cellular automation...
             // Before doing so, we need to summarize what the Evaluator does because I've forgot it.
+            #region
             /*
              * About the Evaluator
              * ----------------------------------------------------------
@@ -127,6 +131,7 @@ namespace Vertex
              * parser. It will return a boolean to represent whether the
              * rule is successful (typically not).
              */
+            #endregion
 
             // Initialize
             if (env.RulePool == null)
@@ -140,15 +145,18 @@ namespace Vertex
             env.Evaluator.RankingHistory.Add(0);
 
             Console.WriteLine("Enter main loop...");
-
+#if !__FORCE_TO_FAIL__
             while (env.Evaluator.Evaluate(ref env.IO, ref env.Matrix, ref env.RulePool) != true)
             {
                 // Not successful yet...
-                Console.Write($"-> [{env.Evaluator.RankingHistory[^1]}] Unsuccessful CurRule= ");
+                Console.Write($"-> [{env.Evaluator.RankingHistory[^1]}] Unsuccessful");
+#if __PRINT_UNSUCCESSFUL_CURRULE__ && __DEBUG_MODE__
+                Console.Write("CurRule= ");
                 for (int i = 0; i < env.RulePool.RuleLength; i++)
                 {
                     Console.Write(env.RulePool.GetLatest()[i] ? "1" : "0");
                 }
+#endif
                 Console.WriteLine();
                 _ = env.RulePool.Produce(env.Evaluator.RankingHistory);
                 env.Evaluator.ConfigCurrentRanking(0);
@@ -158,6 +166,7 @@ namespace Vertex
             }
 
             Console.WriteLine("-> Success!");
+#region
             Console.Beep();
             Console.WriteLine();
             Console.WriteLine("-------------------------------------------------------------------");
@@ -173,6 +182,16 @@ namespace Vertex
             Console.ForegroundColor = fgBak;
             Console.WriteLine("-------------------------------------------------------------------");
             Console.WriteLine("Press ENTER key to close this window.");
+#endregion
+#endif
+
+#if __FORCE_TO_FAIL__ && __DEBUG_MODE__
+            env.Evaluator.RankingHistory.Add(1024);
+            env.Evaluator.RankingHistory.Add(-999);
+            env.RulePool.ruleHistory.Add(new bool[512]);
+            env.RulePool.ruleHistory.Add(new bool[512]);
+            env.RulePool.Produce(env.Evaluator.RankingHistory);
+#endif
             Console.ReadLine();
         }
     }
