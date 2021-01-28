@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 //using System.Collections;
 
 namespace Vertex
@@ -67,6 +68,21 @@ namespace Vertex
         public bool[] Next(List<short> RankingHistory) => GetLatest();
         public bool[] Next() => GetLatest();
 
+        private static (int i, short max) GetGreatest(List<short> RankingHistory)
+        {
+            int res = 0;
+            short maxNow = RankingHistory[0];
+            for (int i = 0; i < RankingHistory.Count; i++)
+            {
+                if (RankingHistory[i] > maxNow)
+                {
+                    res = i;
+                    maxNow = RankingHistory[i];
+                }
+            }
+            return (res, maxNow);
+        }
+
         public bool[] Produce(List<short> RankingHistory)
         {
             if (RankingHistory is null)
@@ -98,7 +114,7 @@ namespace Vertex
              * After this process record the new rule to history and then return it.
              */
 
-            if (RankingHistory[^1] > RankingHistory[^2])
+            if (RankingHistory[^1] > GetGreatest(RankingHistory).max)
             {
                 // Situation 1
                 Console.WriteLine("S_1");
@@ -109,7 +125,7 @@ namespace Vertex
                 ruleHistory[^1][ToMutate] = MutateToWhat;
             }
 
-            if (RankingHistory[^1] == RankingHistory[^2])
+            if (RankingHistory[^1] == GetGreatest(RankingHistory).max)
             {
                 // Situation 2
                 Console.WriteLine("S_2");
@@ -138,9 +154,9 @@ namespace Vertex
 
                 Console.ForegroundColor = ConsoleColor.DarkBlue;
                 Console.Write("RH[^2]= ");
-                for (int i = 0; i < ruleHistory[^2].Length; i++)
+                for (int i = 0; i < ruleHistory[^1].Length; i++)
                 {
-                    Console.Write(ruleHistory[^2][i] ? 1 : 0);
+                    Console.Write(ruleHistory[GetGreatest(RankingHistory).i][i] ? 1 : 0);
                 }
                 Console.ForegroundColor = fgBak;
                 Console.WriteLine();
@@ -158,7 +174,7 @@ namespace Vertex
                 Console.ForegroundColor = ConsoleColor.DarkBlue;
                 for (int i = 0; i < CrossoverPoint; i++)
                 {
-                    child[i] = ruleHistory[^2][i];
+                    child[i] = ruleHistory[GetGreatest(RankingHistory).i][i];
                     Console.Write(child[i] ? 1 : 0);
                 }
                 Console.ForegroundColor = ConsoleColor.DarkMagenta;
@@ -172,14 +188,14 @@ namespace Vertex
                 ruleHistory.Add(child);
             }
 
-            if (RankingHistory[^1] < RankingHistory[^2])
+            if (RankingHistory[^1] < GetGreatest(RankingHistory).max)
             {
                 // Situation 3
                 Console.WriteLine("S_3");
 
                 int ToMutate = rand.Next(0, RuleLength);
                 bool MutateToWhat = rand.Next(0, 2) == 1;
-                ruleHistory.Add(ruleHistory[^2]);
+                ruleHistory.Add(ruleHistory[GetGreatest(RankingHistory).i]);
                 ruleHistory[^1][ToMutate] = MutateToWhat;
             }
 
