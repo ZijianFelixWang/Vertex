@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
+//using System.Threading;
 using System.Threading.Tasks;
+using NLog;
 
 namespace Vertex
 {
     class Evaluator
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public List<ParameterList> ParameterLists = new List<ParameterList>();
         public ParameterList AnswerList = new ParameterList();
         public RIBinder RIBinder;   // RI: Ready Indicator (cell)
@@ -86,17 +89,16 @@ namespace Vertex
             #endregion
 
             // STEP I: Get rule from GA (RulePool) for Matrix
-            bool[] rule = RulePoolDefinition.Next(RankingHistory);
+            bool[] rule = RulePoolDefinition.Next();
 
             // STEP II: EXECUTE THE RULE ON THE MATRIX.
             // - Stage A. Backup the cell list
             List<Cell> CellsBackup = MatrixDefinition.Cells;
 
             // - Stage B. Execute the cell list
-            //Console.WriteLine("\nExecuting:");
             if (MatrixDefinition.UseMultiThreading == false)
             {
-                Console.WriteLine("Traditional single-thread mode (Slow but saves memory if CM large).");
+                //Console.WriteLine("Traditional single-thread mode (Slow but saves memory if CM large).");
                 Console.Write("0%... ");
                 for (uint x = 0, y = 0; y < MatrixDefinition.Rows; x++)
                 {
@@ -113,7 +115,7 @@ namespace Vertex
             }
             else
             {
-                Console.WriteLine("Modern multi-threading mode (Quick but costs much memory if CM large).");
+                //Console.WriteLine("Modern multi-threading mode (Quick but costs much memory if CM large).");
                 List<Task<Matrix>> tasks = new List<Task<Matrix>>(CellsBackup.Count);
 
                 // Delegate definition
@@ -147,7 +149,7 @@ namespace Vertex
                     tasks.Add(new Task<Matrix>(() => TaskExecuteCell(pm)));
                     //Console.WriteLine("Constructed task[" + t + "]");
                 }
-                Console.WriteLine("Tasks construction ok.");
+                Logger.Info("Tasks construction ok.");
 
                 // Start tasks
                 foreach (var t in tasks)
@@ -158,7 +160,7 @@ namespace Vertex
 
                 // Wait for the tasks
                 Task.WaitAll(tasks.ToArray());
-                Console.WriteLine("All tasks OK.");
+                Logger.Info("All tasks OK.");
 
                 // Update from t.Result matrix
                 for (int ti = 0; ti < tasks.Count; ti++)
@@ -167,7 +169,7 @@ namespace Vertex
                     Matrix modified = tasks.ToArray()[ti].Result;
                     MatrixDefinition.Cells[ti] = modified.Cells[ti];
                 }
-                Console.WriteLine("All cells updated.");
+                Logger.Info("All cells updated.");
             }
 
             // Print resulted matrix
@@ -446,7 +448,7 @@ namespace Vertex
             }
 
             //_ = RulePoolDefinition.Produce(RankingHistory);
-            Console.Write("Evaluating rule: ");
+            Logger.Info("Evaluating rule: ");
             for (int i = 0; i < RulePoolDefinition.RuleLength; i++)
             {
                 Console.Write(RulePoolDefinition.GetLatest()[i] ? "1" : "0");
@@ -518,13 +520,13 @@ namespace Vertex
                                 case RIBAction.Continue:
                                     var times = RIBinder.GetTimes();
                                     //Console.Clear();
-                                    ConsoleColor fgBak = Console.ForegroundColor;
-                                    ConsoleColor bgBak = Console.BackgroundColor;
-                                    Console.BackgroundColor = ConsoleColor.Red;
-                                    Console.ForegroundColor = ConsoleColor.Blue;
-                                    Console.WriteLine("Execute[" + Index + "," + times + "]");
-                                    Console.ForegroundColor = fgBak;
-                                    Console.BackgroundColor = bgBak;
+                                    //ConsoleColor fgBak = Console.ForegroundColor;
+                                    //ConsoleColor bgBak = Console.BackgroundColor;
+                                    //Console.BackgroundColor = ConsoleColor.Red;
+                                    //Console.ForegroundColor = ConsoleColor.Blue;
+                                    Logger.Info("Execute[" + Index + "," + times + "]");
+                                    //Console.ForegroundColor = fgBak;
+                                    //Console.BackgroundColor = bgBak;
                                     Console.WriteLine();
 
                                     Execute(ref IODefinition, ref MatrixDefinition, ref RulePoolDefinition);
@@ -535,7 +537,7 @@ namespace Vertex
                                     continue;
 
                                 case RIBAction.OK:
-                                    Console.WriteLine("RI_TRUE: OK");
+                                    //Console.WriteLine("RI_TRUE: OK");
                                     RIBinder.HackTime();
                                     break;
                             }
@@ -553,15 +555,15 @@ namespace Vertex
                                 case RIBAction.Continue:
                                     var times = RIBinder.GetTimes();
                                     //Console.Clear();
-                                    ConsoleColor fgBak = Console.ForegroundColor;
-                                    ConsoleColor bgBak = Console.BackgroundColor;
-                                    Console.BackgroundColor = ConsoleColor.Red;
-                                    Console.ForegroundColor = ConsoleColor.Blue;
-                                    Console.WriteLine("Execute[" + Index + "," + times + "]");
-                                    Console.ForegroundColor = fgBak;
-                                    Console.BackgroundColor = bgBak;
+                                    //ConsoleColor fgBak = Console.ForegroundColor;
+                                    //ConsoleColor bgBak = Console.BackgroundColor;
+                                    //Console.BackgroundColor = ConsoleColor.Red;
+                                    //Console.ForegroundColor = ConsoleColor.Blue;
+                                    Logger.Info("Execute[" + Index + "," + times + "]");
+                                    //Console.ForegroundColor = fgBak;
+                                    //Console.BackgroundColor = bgBak;
                                     Console.WriteLine();
-                                    Console.BackgroundColor = bgBak;
+                                    //Console.BackgroundColor = bgBak;
                                     Execute(ref IODefinition, ref MatrixDefinition, ref RulePoolDefinition);
                                     break;
 
@@ -570,7 +572,7 @@ namespace Vertex
                                     continue;
 
                                 case RIBAction.OK:
-                                    Console.WriteLine("RI_TRUE: OK");
+                                    //Console.WriteLine("RI_TRUE: OK");
                                     RIBinder.HackTime();
                                     break;
                             }
@@ -590,23 +592,26 @@ namespace Vertex
                 if (IODefinition.Outputs.First().Value.Value == result)
                 {
                     // Match!
-                    Console.WriteLine($"For Index = {Index}, success = true, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
+                    Logger.Info($"For Index = {Index}, success = true, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
                     currentRanking++;   // Improve ranking
-                    Console.WriteLine("+1 " + currentRanking);
+                    Logger.Info("+1 " + currentRanking);
                 }
                 else
                 {
                     // Not matches ;'(
-                    Console.WriteLine($"For Index = {Index}, success = false, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
+                    Logger.Info($"For Index = {Index}, success = false, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
                     success = false;
                     currentRanking--;
-                    Console.WriteLine("-1 " + currentRanking);
+                    Logger.Info("-1 " + currentRanking);
                 }
-                RankingHistory.Add(currentRanking);
-                Console.WriteLine("RH[^1]= " + RankingHistory[^1]);
-                RulePoolDefinition.ruleHistory.Add(RulePoolDefinition.GetLatest());
-                Console.WriteLine("Rule registered to rule history.");
+                //RankingHistory.Add(currentRanking);
+                Logger.Info("CR= " + currentRanking);
+                //RulePoolDefinition.ruleHistory.Add(RulePoolDefinition.GetLatest());
+                //Console.WriteLine("Rule registered to rule history.");
             }
+
+            RankingHistory.Add(currentRanking);
+            RulePoolDefinition.ruleHistory.Add(RulePoolDefinition.GetLatest());
 
             // Evaluate() done. Returns success or not to caller.
             return success;

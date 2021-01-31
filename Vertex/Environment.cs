@@ -23,6 +23,9 @@ namespace Vertex
         // Matrix definition
         public Matrix Matrix;
 
+        // Whether to use SVG export
+        public (bool Whether, string Where, ushort Frequency) SVGProperty = (false, "", 0);
+
         // Construction function
         public Environment(string id, Dictionary<string, string> metadata, Evaluator ev, IO io)
         {

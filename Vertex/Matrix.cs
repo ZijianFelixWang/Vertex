@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using NLog;
 
 namespace Vertex
 {
     class Matrix
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         // The Cellular Matrix should be designed here...
         public List<Cell> Cells;
 
@@ -44,7 +47,7 @@ namespace Vertex
             {
                 Cells[i].Value = false;
             }
-            Console.WriteLine("Automata status reseted successfully.");
+            Logger.Info("Automata status reseted successfully.");
         }
 
         public uint? FindCellIndexByLocation(int LocationX, int LocationY)

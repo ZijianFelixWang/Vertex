@@ -15,25 +15,47 @@ _____/   \___/ /_/     \__/  \___/ /_/|_|
 
 // Debug tabs... DISABLE MASTER TAB WHEN PACKAGING...
 #define __DEBUG_MODE__  // Master tab
-// #define __SHOW_COMPLETE_XML__
+//#define __SHOW_COMPLETE_XML__
 //#define __FORCE_TO_FAIL__
 //#define __PRINT_UNSUCCESSFUL_CURRULE__
+//#define __SAVE_EVERY_STEP_SVG__
+//#define __USE_ASPOSE_API__
 
 using System;
 using System.Xml;
 // using System.Xml.Schema;
 using System.IO;
+using NLog;
+
+#if __USE_ASPOSE_API__
+using Aspose.Svg;
+#else
+using Svg;
+#endif
 
 namespace Vertex
 {
     class Program
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         static void Main(string[] args)
         {
             Console.Title = "Vertex v0.2";
             Console.WriteLine("Vertex (Vertex Evaluator-based Recursive automata Technology for EXpress cellular calculation) Version 0.2");
             Console.WriteLine("Copyright 2021 Zijian Wang. All rights reserved.");
             Console.WriteLine("The Vertex software and its resource files are protected by the copyright and other pending or existing intellectual property rights in the P.R.China and other countries/regions.");
+
+            //// Configures NLog
+            //var config = new NLog.Config.LoggingConfiguration();
+            //// Targets where to log to: File and Console
+            //var logfile = new NLog.Targets.FileTarget("logfile") { FileName = "file.txt" };
+            //var logconsole = new NLog.Targets.ColoredConsoleTarget("logconsole");
+            //// Rules for mapping loggers to targets            
+            //config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            //config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile);
+            //// Apply config           
+            //LogManager.LoadConfiguration(@"C:\Users\felix\Documents\projects\Vertex\Vertex\");
 
             //Console.Write("Environment file:");
             //string EnvConf = Console.ReadLine();
@@ -66,19 +88,22 @@ namespace Vertex
             }
             catch (FileNotFoundException)
             {
-                Console.Error.WriteLine("[FATAL] Environment file cannot be loaded.");
+                //Console.Error.WriteLine("[FATAL] Environment file cannot be loaded.");
+                Logger.Error("Environment file cannot be loaded.");
                 //Environment.Exit(-1);
                 System.Environment.Exit(-1);
             }
             catch (ArgumentException)
             {
-                Console.Error.WriteLine("[FATAL] Environment file cannot be loaded.");
+                //Console.Error.WriteLine("[FATAL] Environment file cannot be loaded.");
+                Logger.Error("Environment file cannot be loaded.");
                 //Environment.Exit(-1);
                 System.Environment.Exit(-1);
             }
 
 #if __DEBUG_MODE__ && __SHOW_COMPLETE_XML__
-            Console.WriteLine(document.ToString());
+            //Console.WriteLine(document.ToString());
+            Logger.Debug(document.ToString());
             string line;
             try
             {
@@ -94,11 +119,12 @@ namespace Vertex
             }
             catch (Exception e)
             {
-                Console.WriteLine("Exception: " + e.Message);
+                //Console.WriteLine("Exception: " + e.Message);
+                Logger.Error("Exception: " + e.Message);
             }
             finally
             {
-                Console.WriteLine("Debug option exec done.");
+                Logger.Debug("Debug option exec done.");
             }
 #endif
 
@@ -106,12 +132,12 @@ namespace Vertex
             // document: <environment> - <metadata> ; <evaluator> ; <io>
             env = EnvParser.ParseFromXML(document);
 
-            Console.WriteLine("[INFO] Environment file parsed done successfully.");
-            Console.WriteLine($"[INFO] Environment profile: {env.ID}");
+            Logger.Info("Environment file parsed done successfully.");
+            Logger.Info($"Environment profile: {env.ID}");
 
             // Now starts the cellular automation...
             // Before doing so, we need to summarize what the Evaluator does because I've forgot it.
-            #region
+#region
             /*
              * About the Evaluator
              * ----------------------------------------------------------
@@ -131,7 +157,7 @@ namespace Vertex
              * parser. It will return a boolean to represent whether the
              * rule is successful (typically not).
              */
-            #endregion
+#endregion
 
             // Initialize
             if (env.RulePool == null)
@@ -144,29 +170,67 @@ namespace Vertex
             env.Evaluator.RankingHistory.Add(0);
             env.Evaluator.RankingHistory.Add(0);
 
-            Console.WriteLine("Enter main loop...");
+            Logger.Info("Enter main loop...");
 #if !__FORCE_TO_FAIL__
+            uint count = 0;
             while (env.Evaluator.Evaluate(ref env.IO, ref env.Matrix, ref env.RulePool) != true)
             {
                 // Not successful yet...
-                Console.Write($"-> [{env.Evaluator.RankingHistory[^1]}] Unsuccessful");
+                Logger.Info($"-> [{count}] <{env.Evaluator.RankingHistory[^1]}> Unsuccessful");
 #if __PRINT_UNSUCCESSFUL_CURRULE__ && __DEBUG_MODE__
-                Console.Write("CurRule= ");
+                Logger.Debug("CurRule= ");
                 for (int i = 0; i < env.RulePool.RuleLength; i++)
                 {
                     Console.Write(env.RulePool.GetLatest()[i] ? "1" : "0");
                 }
-#endif
                 Console.WriteLine();
+#endif
+
+#if __SAVE_EVERY_STEP_SVG__ && __DEBUG_MODE__ && __USE_ASPOSE_API__
+                // Will export SVG file to destination
+                Logger.Info($"Exporting SVG file to " + env.SVGProperty.Where);
+                SVGDocument svgDoc = new SVGDocument();
+                const string SVGNamespace = "http://www.w3.org/2000/svg";
+
+                // Work around the svg document
+                SVGExporter exporter = new SVGExporter();
+                exporter.ExportEnvToSVG(ref svgDoc, SVGNamespace, env);
+
+                // Export now
+                svgDoc.Save(env.SVGProperty.Where + $"_{count}.svg");
+                Logger.Info("SVG file exported successfully.");
+#endif
+
+                // SVGSnapshot execution
+                //env.SVGProperty.Frequency
+#if !__USE_ASPOSE_API__
+                // export logic here
+                if ((count + 1) % env.SVGProperty.Frequency == 0)
+                {
+                    Logger.Info("Exporting SVG Snapshot to " + env.SVGProperty.Where + $"_{count}.svg");
+                    SvgDocument svgDocument = new SvgDocument();
+                    SVGExporter exporter = new SVGExporter();
+                    exporter.ExportEnvToSVG(ref svgDocument, env);
+                    svgDocument.Write(env.SVGProperty.Where + $"_{count}.svg");
+                    Logger.Info("SVGSnapshot file exported successfully.");
+                }
+
+#else
+#error Implementation for SVGSnapshot logic is incomplete when using Aspose.SVG API.
+#endif
+
                 _ = env.RulePool.Produce(env.Evaluator.RankingHistory);
                 env.Evaluator.ConfigCurrentRanking(0);
 
                 // reset cells in the matrix
                 env.Matrix.ResetCells();
+
+                // count cfg
+                count++;
             }
 
             Console.WriteLine("-> Success!");
-#region
+                #region
             Console.Beep();
             Console.WriteLine();
             Console.WriteLine("-------------------------------------------------------------------");
@@ -182,7 +246,7 @@ namespace Vertex
             Console.ForegroundColor = fgBak;
             Console.WriteLine("-------------------------------------------------------------------");
             Console.WriteLine("Press ENTER key to close this window.");
-#endregion
+                #endregion
 #endif
 
 #if __FORCE_TO_FAIL__ && __DEBUG_MODE__
@@ -192,6 +256,32 @@ namespace Vertex
             env.RulePool.ruleHistory.Add(new bool[512]);
             env.RulePool.Produce(env.Evaluator.RankingHistory);
 #endif
+                if (env.SVGProperty.Whether == true)
+            {
+#if __USE_ASPOSE_API__
+                // Will export SVG file to destination
+                Logger.Info($"Exporting SVG file to " + env.SVGProperty.Where);
+                SVGDocument svgDoc = new SVGDocument();
+                const string SVGNamespace = "http://www.w3.org/2000/svg";
+
+                // Work around the svg document
+                SVGExporter exporter = new SVGExporter();
+                exporter.ExportEnvToSVG(ref svgDoc, SVGNamespace, env);
+
+                // Export now
+                svgDoc.Save(env.SVGProperty.Where);
+                Logger.Info("SVG file exported successfully.");
+#else
+                // Use SVGLib now...
+                Logger.Info($"Exporting SVG file to " + env.SVGProperty.Where);
+                SvgDocument svgDocument = new SvgDocument();
+                SVGExporter exporter = new SVGExporter();
+                exporter.ExportEnvToSVG(ref svgDocument, env);
+                svgDocument.Write(env.SVGProperty.Where);
+                Logger.Info("SVG file exported successfully.");
+#endif
+            }
+
             Console.ReadLine();
         }
     }

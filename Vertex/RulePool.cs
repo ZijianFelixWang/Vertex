@@ -1,12 +1,17 @@
-﻿using System;
+﻿//#define __COMPARE_WITH_GREATEST__
+
+using System;
 using System.Collections.Generic;
 //using System.Linq;
 //using System.Collections;
+using NLog;
 
 namespace Vertex
 {
     class RulePool
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         // here implements the rule pool.
         // a rule is actually a bool[]
 
@@ -18,6 +23,7 @@ namespace Vertex
 
         public readonly ushort RuleLength = 0;
         public MutationMethod MutationMethod = MutationMethod.Flip;
+        public ushort MutationCount = 1;
 
         public static int GetTimeStamp()
         {
@@ -33,27 +39,29 @@ namespace Vertex
             // During initialization of env.RulePool, the very-first random rule
             // (Generation 0) will be created using the procedures below.
             bool[] gen0 = new bool[RuleLength];
-            Console.Write("G0= ");
+            //Console.Write("G0= ");
             for (int i = 0; i < RuleLength; i++)
             {
                 gen0[i] = Convert.ToBoolean(new Random(GetTimeStamp()).Next(0, 2));
-                Console.Write(gen0[i] ? "1" : "0");
+                //    Console.Write(gen0[i] ? "1" : "0");
             }
-            Console.WriteLine();
+            //Console.WriteLine();
+            Logger.Info("Generating G0 done.");
             ruleHistory.Add(gen0);
 
             System.Threading.Thread.Sleep(2500);
 
             // (Generation 1) will be created using the procedures below.
             bool[] gen1 = new bool[RuleLength];
-            Console.Write("G1= ");
+            //Console.Write("G1= ");
             for (int i = 0; i < RuleLength; i++)
             {
                 gen1[i] = Convert.ToBoolean(new Random(GetTimeStamp()).Next(0, 2));
-                Console.Write(gen1[i] ? "1" : "0");
+                //    Console.Write(gen1[i] ? "1" : "0");
             }
             ruleHistory.Add(gen1);
-            Console.WriteLine();
+            //Console.WriteLine();
+            Logger.Info("Generating G1 done.");
         }
 
         public bool[] GetLatest() => ruleHistory[^1];
@@ -66,7 +74,7 @@ namespace Vertex
         // Random maker
         private Random rand = new Random(new Random(GetTimeStamp()).Next());
 
-        public bool[] Next(List<short> RankingHistory) => GetLatest();
+        //public bool[] Next(List<short> RankingHistory) => GetLatest();
         public bool[] Next() => GetLatest();
 
         private static (int i, short max) GetGreatest(List<short> RankingHistory)
@@ -114,41 +122,56 @@ namespace Vertex
              * If new ranking is less than last one, mutate last ranking's rule
              * After this process record the new rule to history and then return it.
              */
-
+            Logger.Info("Producing new rule from history.");
+#if __COMPARE_WITH_GREATEST__
             if (RankingHistory[^1] > GetGreatest(RankingHistory).max)
+#else
+            if (RankingHistory[^1] > RankingHistory[^2])
+#endif
             {
                 // Situation 1
+                Console.Beep();
                 ConsoleColor fgBak = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("Advantage generation. Self-mutation.");
+                Console.WriteLine("Advantage generation.");
                 Console.ForegroundColor = fgBak;
 
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                int ToMutate = rand.Next(0, RuleLength);
-                bool MutateToWhat;
-                if (MutationMethod == MutationMethod.Flip)
-                {
-                    MutateToWhat = !ruleHistory[^1][ToMutate];
-                }
-                else
-                {
-                    // MutationMethod == MutationMethod.Random
-                    MutateToWhat = rand.Next(0, 2) == 1;
-                }
+                ////Console.ForegroundColor = ConsoleColor.Yellow;
+                //int ToMutate = rand.Next(0, RuleLength);
+                //bool MutateToWhat;
+                //if (MutationMethod == MutationMethod.Flip)
+                //{
+                //    MutateToWhat = !ruleHistory[^1][ToMutate];
+                //}
+                //else
+                //{
+                //    // MutationMethod == MutationMethod.Random
+                //    MutateToWhat = rand.Next(0, 2) == 1;
+                //}
 
-                Console.WriteLine($"Rule[{ToMutate}] mutates to {(MutateToWhat ? "1" : "0")}");
-                Console.ForegroundColor = fgBak;
+                //Logger.Info($"Rule[{ToMutate}] mutates to {(MutateToWhat ? "1" : "0")}");
+                ////Console.ForegroundColor = fgBak;
 
-                ruleHistory.Add(ruleHistory[^1]);
-                ruleHistory[^1][ToMutate] = MutateToWhat;
+                //ruleHistory.Add(ruleHistory[^1]);
+                //ruleHistory[^1][ToMutate] = MutateToWhat;
+
+                // Mutation: utilize Mutate function
+                bool[] rule = ruleHistory[^1];
+                ushort mcnt = (ushort)rand.Next(1, MutationCount + 1);
+                Mutate(ref rule, MutationMethod, mcnt);
+                ruleHistory.Add(rule);
             }
 
+#if __COMPARE_WITH_GREATEST__
             if (RankingHistory[^1] == GetGreatest(RankingHistory).max)
+#else
+            if (RankingHistory[^1] == RankingHistory[^2])
+#endif            
             {
                 // Situation 2
                 ConsoleColor fgBak = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("Equallivant generation. SPCV algorithm.");
+                Console.WriteLine("Equallivant generation.");
                 Console.ForegroundColor = fgBak;
 
                 // Single-Point Crossover (SPCV) Algorithm:
@@ -169,7 +192,7 @@ namespace Vertex
                 int CrossoverPoint = rand.Next(1, RuleLength - 1);  // CVP
                 //ConsoleColor fgBak = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Console.WriteLine("CVP= " + CrossoverPoint);
+                Logger.Info("CVP= " + CrossoverPoint);
                 Console.ForegroundColor = fgBak;
                 bool[] child = new bool[RuleLength];
 
@@ -177,12 +200,13 @@ namespace Vertex
                 Console.Write("RH[^2]= ");
                 for (int i = 0; i < ruleHistory[^1].Length; i++)
                 {
-                    Console.Write(ruleHistory[GetGreatest(RankingHistory).i][i] ? 1 : 0);
+                    //Console.Write(ruleHistory[GetGreatest(RankingHistory).i][i] ? 1 : 0);
+                    Console.Write(ruleHistory[^2][i] ? 1 : 0);
                 }
                 Console.ForegroundColor = fgBak;
                 Console.WriteLine();
 
-                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.ForegroundColor = ConsoleColor.Red;
                 Console.Write("RH[^1]= ");
                 for (int i = 0; i < ruleHistory[^1].Length; i++)
                 {
@@ -195,10 +219,10 @@ namespace Vertex
                 Console.ForegroundColor = ConsoleColor.DarkBlue;
                 for (int i = 0; i < CrossoverPoint; i++)
                 {
-                    child[i] = ruleHistory[GetGreatest(RankingHistory).i][i];
+                    child[i] = ruleHistory[^2][i];
                     Console.Write(child[i] ? 1 : 0);
                 }
-                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.ForegroundColor = ConsoleColor.Red;
                 for (int i = CrossoverPoint; i < RuleLength; i++)
                 {
                     child[i] = ruleHistory[^1][i];
@@ -207,36 +231,73 @@ namespace Vertex
                 Console.ForegroundColor = fgBak;
                 Console.WriteLine();
                 ruleHistory.Add(child);
+
+                bool[] r = ruleHistory[^1];
+                ushort mcnt = (ushort)rand.Next(1, MutationCount + 1);
+
+                Mutate(ref r, MutationMethod, mcnt);
+                ruleHistory[^1] = r;
             }
 
+#if __COMPARE_WITH_GREATEST__
             if (RankingHistory[^1] < GetGreatest(RankingHistory).max)
+#else
+            if (RankingHistory[^1] < RankingHistory[^2])
+#endif            
             {
                 // Situation 3
                 ConsoleColor fgBak = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("Disadvantage generation. Max-mutation");
+                Console.WriteLine("Disadvantage generation.");
                 Console.ForegroundColor = fgBak;
 
-                Console.ForegroundColor = ConsoleColor.Yellow;
-                int ToMutate = rand.Next(0, RuleLength);
+                //Console.ForegroundColor = ConsoleColor.Yellow;
+                //int ToMutate = rand.Next(0, RuleLength);
 
-                bool MutateToWhat;
-                if (MutationMethod == MutationMethod.Flip)
-                {
-                    MutateToWhat = !ruleHistory[^1][ToMutate];
-                }
-                else
-                {
-                    // MutationMethod == MutationMethod.Random
-                    MutateToWhat = rand.Next(0, 2) == 1;
-                }
+                //bool MutateToWhat;
+                //if (MutationMethod == MutationMethod.Flip)
+                //{
+                //    MutateToWhat = !ruleHistory[^1][ToMutate];
+                //}
+                //else
+                //{
+                //    // MutationMethod == MutationMethod.Random
+                //    MutateToWhat = rand.Next(0, 2) == 1;
+                //}
 
-                Console.WriteLine($"Rule[{ToMutate}] mutates to {(MutateToWhat ? "1" : "0")}");
-                ruleHistory.Add(ruleHistory[GetGreatest(RankingHistory).i]);
-                ruleHistory[^1][ToMutate] = MutateToWhat;
+                //Logger.Info($"Rule[{ToMutate}] mutates to {(MutateToWhat ? "1" : "0")}");
+                //ruleHistory.Add(ruleHistory[GetGreatest(RankingHistory).i]);
+                //ruleHistory[^1][ToMutate] = MutateToWhat;
+
+                // Mutation: utilize Mutate function
+                bool[] rule = ruleHistory[^2];
+                ushort mcnt = (ushort)rand.Next(1, MutationCount + 1);
+                Mutate(ref rule, MutationMethod, mcnt);
+                ruleHistory.Add(rule);
             }
 
             return ruleHistory[^1];
+        }
+
+        private void Mutate(ref bool[] rule, MutationMethod method, ushort mutationCount)
+        {
+            for (ushort i = 0; i < mutationCount; i++)
+            {
+                // Here defines a single mutation
+                int ToMutate = rand.Next(0, RuleLength);
+                bool MutateToWhat;
+                if (method == MutationMethod.Flip)
+                {
+                    MutateToWhat = !rule[ToMutate];
+                }
+                else
+                {
+                    // Random method
+                    MutateToWhat = rand.Next(0, 2) == 1;
+                }
+                Logger.Info($"Rule[{ToMutate}] mutates from {rule[ToMutate]} to {(MutateToWhat ? "1" : "0")}");
+                rule[ToMutate] = MutateToWhat;
+            }
         }
     }
 

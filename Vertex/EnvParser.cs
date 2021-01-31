@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using NLog;
 
 namespace Vertex
 {
     static class EnvParser
     {
+        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+
         public static void ParseMetaData(ref Environment env, in XmlNode node)
         {
             foreach (XmlNode metadataNode in node.ChildNodes)
@@ -28,7 +31,7 @@ namespace Vertex
                     case "Visibility":
                     case "Networking":
                     case "Terminal":
-                        Console.Error.WriteLine("[WARNING] This version doesn't support networking. This line of configuration is ignored.");
+                        Logger.Warn("This version doesn't support networking. This line of configuration is ignored.");
                         break;
 
                     case "CMSize":
@@ -66,6 +69,23 @@ namespace Vertex
                             _ => throw new FormatException($"Unexpected MutationMethod \"{metadataNode.Attributes["val"].Value.Trim().ToLower()}\"")
                         };
 
+                        break;
+
+                    case "MutationCount":
+                        if (env.RulePool == null)
+                        {
+                            throw new FormatException("MutationCount property must be placed after MutationMethod property!");
+                        }
+                        env.RulePool.MutationCount = ushort.Parse(metadataNode.Attributes["val"].Value);
+                        break;
+
+                    case "SVGOutputFile":
+                        env.SVGProperty.Whether = true;
+                        env.SVGProperty.Where = metadataNode.Attributes["val"].Value;
+                        break;
+
+                    case "SVGSnapshot":
+                        env.SVGProperty.Frequency = ushort.Parse(metadataNode.Attributes["val"].Value);
                         break;
 
                     default:
@@ -436,14 +456,14 @@ namespace Vertex
             }
             catch (FormatException ex)
             {
-                Console.Error.WriteLine("[FATAL] XML Syntax error");
-                Console.Error.WriteLine(ex.ToString());
+                Logger.Error("XML Syntax error");
+                Logger.Error(ex.Message);
                 System.Environment.Exit(-1);
             }
             catch (NotSupportedException ex)
             {
-                Console.Error.WriteLine("[FATAL] Some operations are not supported now...");
-                Console.Error.WriteLine(ex.ToString());
+                Logger.Warn("Something is not supported now...");
+                Logger.Warn(ex.Message);
                 System.Environment.Exit(-1);
             }
 

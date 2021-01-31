@@ -39,10 +39,19 @@ Vertex (Vertex Evaluator-based Recursive automata Technology for EXpress cellula
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="C:\Users\felix\.nuget\packages\nlog.config\4.7.7\contentFiles\any\any\NLog.config" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Include="icon\icon.png">
       <Pack>True</Pack>
       <PackagePath></PackagePath>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="NLog" Version="4.7.7" />
+    <PackageReference Include="Svg" Version="3.2.3" />
   </ItemGroup>
 
 </Project>
