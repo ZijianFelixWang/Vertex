@@ -26,6 +26,12 @@ namespace Vertex
         // Whether to use SVG export
         public (bool Whether, string Where, ushort Frequency) SVGProperty = (false, "", 0);
 
+        // Where to export resulted rule
+        public string ResultedRuleOutputFile = "";
+
+        // Language
+        public string Language = "en-US";
+
         // Construction function
         public Environment(string id, Dictionary<string, string> metadata, Evaluator ev, IO io)
         {

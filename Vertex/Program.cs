@@ -64,6 +64,7 @@ namespace Vertex
             {
                 // No specified environment file
                 Console.Write("Environment file:");
+                
                 EnvConf = Console.ReadLine();
             }
             else
@@ -132,12 +133,19 @@ namespace Vertex
             // document: <environment> - <metadata> ; <evaluator> ; <io>
             env = EnvParser.ParseFromXML(document);
 
-            Logger.Info("Environment file parsed done successfully.");
-            Logger.Info($"Environment profile: {env.ID}");
+            // Now document has been parsed, can use localized output now.
+            // Setup resource helper
+            ResourceHelper.DefaultCulture = env.Language;
+
+            //Logger.Info("Environment file parsing done successfully.");
+            ResourceHelper.Log(VxLogLevel.Info,"EnvFileParsingDoneInfo");
+
+            //Logger.Info($"Environment profile: {env.ID}");
+            ResourceHelper.Log(VxLogLevel.Info, "EnvFileHint", env.ID);
 
             // Now starts the cellular automation...
             // Before doing so, we need to summarize what the Evaluator does because I've forgot it.
-#region
+            #region
             /*
              * About the Evaluator
              * ----------------------------------------------------------
@@ -157,7 +165,7 @@ namespace Vertex
              * parser. It will return a boolean to represent whether the
              * rule is successful (typically not).
              */
-#endregion
+            #endregion
 
             // Initialize
             if (env.RulePool == null)
@@ -170,7 +178,9 @@ namespace Vertex
             env.Evaluator.RankingHistory.Add(0);
             env.Evaluator.RankingHistory.Add(0);
 
-            Logger.Info("Enter main loop...");
+            //Logger.Info("Enter main loop...");
+            ResourceHelper.Log(VxLogLevel.Info, "EnterMainLoopHint");
+
 #if !__FORCE_TO_FAIL__
             uint count = 0;
             while (env.Evaluator.Evaluate(ref env.IO, ref env.Matrix, ref env.RulePool) != true)
@@ -200,19 +210,21 @@ namespace Vertex
                 svgDoc.Save(env.SVGProperty.Where + $"_{count}.svg");
                 Logger.Info("SVG file exported successfully.");
 #endif
-
                 // SVGSnapshot execution
                 //env.SVGProperty.Frequency
 #if !__USE_ASPOSE_API__
                 // export logic here
                 if ((count + 1) % env.SVGProperty.Frequency == 0)
                 {
-                    Logger.Info("Exporting SVG Snapshot to " + env.SVGProperty.Where + $"_{count}.svg");
+                    //Logger.Info("Exporting SVG Snapshot to " + env.SVGProperty.Where + $"_{count}.svg");
+                    ResourceHelper.Log(VxLogLevel.Info, "ExportSVGSnapshotHead", env.SVGProperty.Where + $"_{count}.svg");
                     SvgDocument svgDocument = new SvgDocument();
                     SVGExporter exporter = new SVGExporter();
                     exporter.ExportEnvToSVG(ref svgDocument, env);
                     svgDocument.Write(env.SVGProperty.Where + $"_{count}.svg");
-                    Logger.Info("SVGSnapshot file exported successfully.");
+                    svgDocument.Write(env.SVGProperty.Where + "_latest.svg");
+                    //Logger.Info("SVGSnapshot file exported successfully.");
+                    ResourceHelper.Log("SVGExportSuccessInfo");
                 }
 
 #else
@@ -229,24 +241,52 @@ namespace Vertex
                 count++;
             }
 
-            Console.WriteLine("-> Success!");
-                #region
+            //Console.WriteLine("-> Success!");
+            //Logger.Info("Has successfully generated the executable rule.");
+            ResourceHelper.Log("FinalSuccessInfo");
+            #region
             Console.Beep();
             Console.WriteLine();
             Console.WriteLine("-------------------------------------------------------------------");
-            ConsoleColor fgBak = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.Write("Resulted rule= ");
+            //ConsoleColor fgBak = Console.ForegroundColor;
+            //Console.ForegroundColor = ConsoleColor.Green;
+            //Console.Write("Resulted rule= ");
+            string resRule = "";
             for (int i = 0; i < env.RulePool.RuleLength; i++)
             {
-                Console.Write(env.RulePool.GetLatest()[i] ? "1" : "0");
+                resRule += env.RulePool.GetLatest()[i] ? "1" : "0";
             }
-            Console.ForegroundColor = fgBak;
-            Console.WriteLine();
-            Console.ForegroundColor = fgBak;
+            ResourceHelper.Log("ResultedRuleHint", resRule);
+
+            // Export resultedReult to file
+            ResourceHelper.Log("ExportRuleHint", env.ResultedRuleOutputFile);
+            try
+            {
+                //using (StreamWriter sw = new StreamWriter(env.ResultedRuleOutputFile))
+                //{
+                //    sw.WriteLine(resRule);
+                //    sw.Close();
+                //}
+
+                //Here should export XML formatted.
+                RuleExporter.ExportRuleToXML(env, env.ResultedRuleOutputFile);
+
+                //Logger.Info("Exported resulted rule to file successfully.");
+                ResourceHelper.Log("ExportRuleSuccessInfo");
+            }
+            catch (Exception exp)
+            {
+                //Logger.Error("Failed to open export file to save resRule: " + exp.Message);
+                ResourceHelper.Log("ExportRuleErrorHint", exp.Message);
+            }
+
+            //Console.ForegroundColor = fgBak;
+            //Console.WriteLine();
+            //Console.ForegroundColor = fgBak;
             Console.WriteLine("-------------------------------------------------------------------");
-            Console.WriteLine("Press ENTER key to close this window.");
-                #endregion
+            //Logger.Info("Press ENTER key to close this window.");
+            ResourceHelper.Log("ExitConfirm");
+            #endregion
 #endif
 
 #if __FORCE_TO_FAIL__ && __DEBUG_MODE__
@@ -256,9 +296,11 @@ namespace Vertex
             env.RulePool.ruleHistory.Add(new bool[512]);
             env.RulePool.Produce(env.Evaluator.RankingHistory);
 #endif
-                if (env.SVGProperty.Whether == true)
+            if (env.SVGProperty.Whether == true)
             {
 #if __USE_ASPOSE_API__
+                #region
+#warning Multiculture resx file not implemented warning.
                 // Will export SVG file to destination
                 Logger.Info($"Exporting SVG file to " + env.SVGProperty.Where);
                 SVGDocument svgDoc = new SVGDocument();
@@ -271,14 +313,18 @@ namespace Vertex
                 // Export now
                 svgDoc.Save(env.SVGProperty.Where);
                 Logger.Info("SVG file exported successfully.");
+                #endregion
 #else
                 // Use SVGLib now...
-                Logger.Info($"Exporting SVG file to " + env.SVGProperty.Where);
+                //Logger.Info($"Exporting SVG file to " + env.SVGProperty.Where);
+                ResourceHelper.Log("ExportSVGHint", env.SVGProperty.Where);
+
                 SvgDocument svgDocument = new SvgDocument();
                 SVGExporter exporter = new SVGExporter();
                 exporter.ExportEnvToSVG(ref svgDocument, env);
                 svgDocument.Write(env.SVGProperty.Where);
-                Logger.Info("SVG file exported successfully.");
+                //Logger.Info("SVG file exported successfully.");
+                ResourceHelper.Log("ExportSVGSuccessInfo");
 #endif
             }
 

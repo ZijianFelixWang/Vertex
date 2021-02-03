@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 //using System.Threading;
 using System.Threading.Tasks;
-using NLog;
+//using NLog;
 
 namespace Vertex
 {
     class Evaluator
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        //private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public List<ParameterList> ParameterLists = new List<ParameterList>();
         public ParameterList AnswerList = new ParameterList();
@@ -149,7 +149,8 @@ namespace Vertex
                     tasks.Add(new Task<Matrix>(() => TaskExecuteCell(pm)));
                     //Console.WriteLine("Constructed task[" + t + "]");
                 }
-                Logger.Info("Tasks construction ok.");
+                //Logger.Info("Tasks construction ok.");
+                ResourceHelper.Log("TasksConstructedInfo");
 
                 // Start tasks
                 foreach (var t in tasks)
@@ -160,7 +161,8 @@ namespace Vertex
 
                 // Wait for the tasks
                 Task.WaitAll(tasks.ToArray());
-                Logger.Info("All tasks OK.");
+                //Logger.Info("All tasks OK.");
+                ResourceHelper.Log("TasksDoneInfo");
 
                 // Update from t.Result matrix
                 for (int ti = 0; ti < tasks.Count; ti++)
@@ -169,7 +171,8 @@ namespace Vertex
                     Matrix modified = tasks.ToArray()[ti].Result;
                     MatrixDefinition.Cells[ti] = modified.Cells[ti];
                 }
-                Logger.Info("All cells updated.");
+                //Logger.Info("All cells updated.");
+                ResourceHelper.Log("CellsUpdatedInfo");
             }
 
             // Print resulted matrix
@@ -448,7 +451,8 @@ namespace Vertex
             }
 
             //_ = RulePoolDefinition.Produce(RankingHistory);
-            Logger.Info("Evaluating rule: ");
+            //Logger.Info("Evaluating rule: ");
+            ResourceHelper.Log("EvaluatingHint");
             for (int i = 0; i < RulePoolDefinition.RuleLength; i++)
             {
                 Console.Write(RulePoolDefinition.GetLatest()[i] ? "1" : "0");
@@ -524,7 +528,9 @@ namespace Vertex
                                     //ConsoleColor bgBak = Console.BackgroundColor;
                                     //Console.BackgroundColor = ConsoleColor.Red;
                                     //Console.ForegroundColor = ConsoleColor.Blue;
-                                    Logger.Info("Execute[" + Index + "," + times + "]");
+                                    //Logger.Info("Execute[" + Index + "," + times + "]");
+                                    ResourceHelper.Log("ExecutionHint", Index + "," + times + "]");
+
                                     //Console.ForegroundColor = fgBak;
                                     //Console.BackgroundColor = bgBak;
                                     Console.WriteLine();
@@ -559,7 +565,9 @@ namespace Vertex
                                     //ConsoleColor bgBak = Console.BackgroundColor;
                                     //Console.BackgroundColor = ConsoleColor.Red;
                                     //Console.ForegroundColor = ConsoleColor.Blue;
-                                    Logger.Info("Execute[" + Index + "," + times + "]");
+                                    //Logger.Info("Execute[" + Index + "," + times + "]");
+                                    ResourceHelper.Log("ExecutionHint", Index + "," + times + "]");
+
                                     //Console.ForegroundColor = fgBak;
                                     //Console.BackgroundColor = bgBak;
                                     Console.WriteLine();
@@ -592,20 +600,26 @@ namespace Vertex
                 if (IODefinition.Outputs.First().Value.Value == result)
                 {
                     // Match!
-                    Logger.Info($"For Index = {Index}, success = true, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
+                    //Logger.Info($"For Index = {Index}, success = true, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
+                    ResourceHelper.Log("TestSuccessHint", Index.ToString());
                     currentRanking++;   // Improve ranking
-                    Logger.Info("+1 " + currentRanking);
+                    //Logger.Info("+1 " + currentRanking);
+                    ResourceHelper.Log("RankingIncHint", currentRanking.ToString());
                 }
                 else
                 {
                     // Not matches ;'(
-                    Logger.Info($"For Index = {Index}, success = false, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
+                    //Logger.Info($"For Index = {Index}, success = false, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
+                    ResourceHelper.Log("TestFailureHint", Index.ToString());
                     success = false;
                     currentRanking--;
-                    Logger.Info("-1 " + currentRanking);
+                    //Logger.Info("-1 " + currentRanking);
+                    ResourceHelper.Log("RankingDecHint", currentRanking.ToString());
                 }
                 //RankingHistory.Add(currentRanking);
-                Logger.Info("CR= " + currentRanking);
+                //Logger.Info("CR= " + currentRanking);
+                ResourceHelper.Log("CurrentRankingHint", currentRanking.ToString());
+
                 //RulePoolDefinition.ruleHistory.Add(RulePoolDefinition.GetLatest());
                 //Console.WriteLine("Rule registered to rule history.");
             }

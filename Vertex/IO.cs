@@ -1,14 +1,14 @@
-﻿using System;
+﻿//using System;
 using System.Collections.Generic;
 //using System.Collections;
 using System.Linq;
-using NLog;
+//using NLog;
 
 namespace Vertex
 {
     class IO
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        //private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         // IO Definition
         public Dictionary<string, VCIOCell> Inputs = new Dictionary<string, VCIOCell>();
@@ -17,13 +17,16 @@ namespace Vertex
 
         public void UpdateCellsFromInput(ref List<Cell> Cells)   // Sync from VD[Input] to Cells
         {
-            Logger.Info("Syncing Cells data... ");
+            //Logger.Info("Syncing Cells data... ");
+            ResourceHelper.Log("CellsSyncInfo");
             // Will only sync Inputs list
             for (int i = 0; i < Inputs.Count; i++)
             {
                 Cells[(int)Inputs.Values.ToArray()[i].ID].Value = Inputs.Values.ToArray()[i].Value;
             }
         }
+
+        public int GetVCIOCount() => Inputs.Count + Outputs.Count + ReadyIndicators.Count;
 
         public void Sync(in List<Cell> Cells)  // Sync from Cells to VCIO dicts
         {

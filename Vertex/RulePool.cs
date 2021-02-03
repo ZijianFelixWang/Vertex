@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 //using System.Linq;
 //using System.Collections;
-using NLog;
+//using NLog;
 
 namespace Vertex
 {
     class RulePool
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        //private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         // here implements the rule pool.
         // a rule is actually a bool[]
@@ -46,7 +46,9 @@ namespace Vertex
                 //    Console.Write(gen0[i] ? "1" : "0");
             }
             //Console.WriteLine();
-            Logger.Info("Generating G0 done.");
+            //Logger.Info("Generating G0 done.");
+            ResourceHelper.Log("G0OKInfo");
+
             ruleHistory.Add(gen0);
 
             System.Threading.Thread.Sleep(2500);
@@ -61,7 +63,8 @@ namespace Vertex
             }
             ruleHistory.Add(gen1);
             //Console.WriteLine();
-            Logger.Info("Generating G1 done.");
+            //Logger.Info("Generating G1 done.");
+            ResourceHelper.Log("G1OKInfo");
         }
 
         public bool[] GetLatest() => ruleHistory[^1];
@@ -122,7 +125,8 @@ namespace Vertex
              * If new ranking is less than last one, mutate last ranking's rule
              * After this process record the new rule to history and then return it.
              */
-            Logger.Info("Producing new rule from history.");
+            //Logger.Info("Producing new rule from history.");
+            ResourceHelper.Log("ProduceRuleInfo");
 #if __COMPARE_WITH_GREATEST__
             if (RankingHistory[^1] > GetGreatest(RankingHistory).max)
 #else
@@ -192,7 +196,8 @@ namespace Vertex
                 int CrossoverPoint = rand.Next(1, RuleLength - 1);  // CVP
                 //ConsoleColor fgBak = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Yellow;
-                Logger.Info("CVP= " + CrossoverPoint);
+                //Logger.Info("CVP= " + CrossoverPoint);
+                ResourceHelper.Log("CVPHint", CrossoverPoint.ToString());
                 Console.ForegroundColor = fgBak;
                 bool[] child = new bool[RuleLength];
 
@@ -295,7 +300,7 @@ namespace Vertex
                     // Random method
                     MutateToWhat = rand.Next(0, 2) == 1;
                 }
-                Logger.Info($"Rule[{ToMutate}] mutates from {rule[ToMutate]} to {(MutateToWhat ? "1" : "0")}");
+                //Logger.Info($"Rule[{ToMutate}] mutates from {rule[ToMutate]} to {(MutateToWhat ? "1" : "0")}");
                 rule[ToMutate] = MutateToWhat;
             }
         }

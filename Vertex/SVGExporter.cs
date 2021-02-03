@@ -9,14 +9,14 @@ using Svg;  // opensource freeware SVG
 using System.Drawing;
 #endif
 
-using NLog;
+//using NLog;
 using System.Linq;
 
 namespace Vertex
 {
     class SVGExporter
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        //private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
 #if __USE_ASPOSE_API__
         public void ExportEnvToSVG(ref SVGDocument document, in string SVGNamespace, in Environment env)
@@ -54,23 +54,24 @@ namespace Vertex
 #else
         public void ExportEnvToSVG(ref SvgDocument document, in Environment env)
         {
-            Logger.Info("Starting SVG export function...");
+            //Logger.Info("Starting SVG export function...");
+            ResourceHelper.Log("StartSVGExportInfo");
 
             // Get max rank
             short maxRank = env.Evaluator.RankingHistory.Max();
 
-            float lastX = 100F;
-            float lastY = yConvert(maxRank, env.Evaluator.RankingHistory[0], 100F);
+            float lastX = 10F;
+            float lastY = yConvert(maxRank, env.Evaluator.RankingHistory[0], 10F);
 
-            for (int i = 1; i < env.Evaluator.RankingHistory.Count; i++, lastX += 10F)
+            for (int i = 1; i < env.Evaluator.RankingHistory.Count; i++, lastX += 5F)
             {
-                float nowY = yConvert(maxRank, env.Evaluator.RankingHistory[i], 100F);
+                float nowY = yConvert(maxRank, env.Evaluator.RankingHistory[i], 10F);
 
                 SvgLine conn = new SvgLine
                 {
                     StartX = lastX,
                     StartY = lastY,
-                    EndX = lastX + 10F,
+                    EndX = lastX + 5F,
                     EndY = nowY,
                     StrokeWidth = 3,
                     Stroke = new SvgColourServer(Color.Black)
@@ -95,7 +96,7 @@ namespace Vertex
 
             res = 0 + topMargin + (maxRank - rank)
             */
-            float res = topMargin + (maxRank - rank) * 10;
+            float res = topMargin + (maxRank - rank) * 5;
             return res;
         }
     }

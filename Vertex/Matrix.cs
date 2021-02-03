@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using NLog;
+//using NLog;
 
 namespace Vertex
 {
     class Matrix
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        //private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         // The Cellular Matrix should be designed here...
         public List<Cell> Cells;
@@ -16,6 +16,8 @@ namespace Vertex
 
         public readonly uint Columns;
         public readonly uint Rows;
+
+        public string rawSize = "0x0";
 
         public Matrix(uint Columns, uint Rows)
         {
@@ -47,7 +49,8 @@ namespace Vertex
             {
                 Cells[i].Value = false;
             }
-            Logger.Info("Automata status reseted successfully.");
+            //Logger.Info("Automata status reseted successfully.");
+            ResourceHelper.Log("CCAResetedInfo");
         }
 
         public uint? FindCellIndexByLocation(int LocationX, int LocationY)

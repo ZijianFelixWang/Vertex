@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
-using NLog;
+//using NLog;
+//using Vertex.Resources;
 
 namespace Vertex
 {
     static class EnvParser
     {
-        private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
+        //private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static void ParseMetaData(ref Environment env, in XmlNode node)
         {
@@ -31,14 +32,18 @@ namespace Vertex
                     case "Visibility":
                     case "Networking":
                     case "Terminal":
-                        Logger.Warn("This version doesn't support networking. This line of configuration is ignored.");
+                        //Logger.Warn("This version doesn't support networking. This line of configuration is ignored.");
+                        ResourceHelper.Log("NoNetworkingFeatureWarn");
                         break;
 
                     case "CMSize":
                         string toParse = metadataNode.Attributes["val"].Value;
                         string[] xAndY = toParse.Split('x');
-                        env.Matrix = new Matrix(uint.Parse(xAndY[0]), uint.Parse(xAndY[1]));
-                        // = new List<Cell>(Convert.ToInt32((env.Matrix.Columns * env.Matrix.Rows) - 1));
+                        env.Matrix = new Matrix(uint.Parse(xAndY[0]), uint.Parse(xAndY[1]))
+                        {
+                            // = new List<Cell>(Convert.ToInt32((env.Matrix.Columns * env.Matrix.Rows) - 1));
+                            rawSize = toParse
+                        };
                         break;
 
                     case "ShowRealTimeMatrix":
@@ -86,6 +91,14 @@ namespace Vertex
 
                     case "SVGSnapshot":
                         env.SVGProperty.Frequency = ushort.Parse(metadataNode.Attributes["val"].Value);
+                        break;
+
+                    case "ResultedRuleOutputFile":
+                        env.ResultedRuleOutputFile = metadataNode.Attributes["val"].Value;
+                        break;
+
+                    case "Language":
+                        env.Language = metadataNode.Attributes["val"].Value;
                         break;
 
                     default:
@@ -456,14 +469,16 @@ namespace Vertex
             }
             catch (FormatException ex)
             {
-                Logger.Error("XML Syntax error");
-                Logger.Error(ex.Message);
+                //Logger.Error("XML Syntax error");
+                ResourceHelper.Log(VxLogLevel.Fatal, "EnvSyntaxError", ex.Message);
                 System.Environment.Exit(-1);
             }
             catch (NotSupportedException ex)
             {
-                Logger.Warn("Something is not supported now...");
-                Logger.Warn(ex.Message);
+                //Logger.Warn("Something is not supported now...");
+                //Logger.Warn(ex.Message);
+                ResourceHelper.Log(VxLogLevel.Fatal, "NotSupportedError", ex.Message);
+
                 System.Environment.Exit(-1);
             }
 
