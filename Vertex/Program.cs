@@ -219,8 +219,9 @@ namespace Vertex
                     //Logger.Info("Exporting SVG Snapshot to " + env.SVGProperty.Where + $"_{count}.svg");
                     ResourceHelper.Log(VxLogLevel.Info, "ExportSVGSnapshotHead", env.SVGProperty.Where + $"_{count}.svg");
                     SvgDocument svgDocument = new SvgDocument();
-                    SVGExporter exporter = new SVGExporter();
-                    exporter.ExportEnvToSVG(ref svgDocument, env);
+                    //SVGExporter exporter = new SVGExporter();
+                    //exporter.ExportEnvToSVG(ref svgDocument, env);
+                    SVGExporter.ExportEnvToSVG(ref svgDocument, env);
                     svgDocument.Write(env.SVGProperty.Where + $"_{count}.svg");
                     svgDocument.Write(env.SVGProperty.Where + "_latest.svg");
                     //Logger.Info("SVGSnapshot file exported successfully.");
@@ -320,8 +321,7 @@ namespace Vertex
                 ResourceHelper.Log("ExportSVGHint", env.SVGProperty.Where);
 
                 SvgDocument svgDocument = new SvgDocument();
-                SVGExporter exporter = new SVGExporter();
-                exporter.ExportEnvToSVG(ref svgDocument, env);
+                SVGExporter.ExportEnvToSVG(ref svgDocument, env);
                 svgDocument.Write(env.SVGProperty.Where);
                 //Logger.Info("SVG file exported successfully.");
                 ResourceHelper.Log("ExportSVGSuccessInfo");

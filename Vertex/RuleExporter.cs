@@ -80,11 +80,13 @@ namespace Vertex
 
             // For RIs
             // < VCIO type = "ri" location = "107" on = "OK" off = "Continue" timeout = "1" />
-            VCIOCell ri = new VCIOCell();
-            foreach (VCIOCell vcio in env.IO.ReadyIndicators.Values)
-            {
-                ri = vcio;  // There should be only one ReadyIndicator in the env.
-            }
+
+            //foreach (VCIOCell vcio in env.IO.ReadyIndicators.Values)
+            //{
+            //    ri = vcio;  // There should be only one ReadyIndicator in the env.
+            //}
+
+            VCIOCell ri = env.IO.ReadyIndicator.content;
 
             // Get riba string
             string RIBA_on = "", RIBA_off = "";

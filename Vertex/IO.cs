@@ -13,7 +13,14 @@ namespace Vertex
         // IO Definition
         public Dictionary<string, VCIOCell> Inputs = new Dictionary<string, VCIOCell>();
         public Dictionary<string, VCIOCell> Outputs = new Dictionary<string, VCIOCell>();
-        public Dictionary<string, VCIOCell> ReadyIndicators = new Dictionary<string, VCIOCell>();
+        //public Dictionary<string, VCIOCell> ReadyIndicators = new Dictionary<string, VCIOCell>();
+        public (string name, VCIOCell content) ReadyIndicator;
+
+        public IO()
+        {
+            ReadyIndicator.name = "";
+            ReadyIndicator.content = new VCIOCell();
+        }
 
         public void UpdateCellsFromInput(ref List<Cell> Cells)   // Sync from VD[Input] to Cells
         {
@@ -26,7 +33,8 @@ namespace Vertex
             }
         }
 
-        public int GetVCIOCount() => Inputs.Count + Outputs.Count + ReadyIndicators.Count;
+        //public int GetVCIOCount() => Inputs.Count + Outputs.Count + ReadyIndicators.Count;
+        public int GetVCIOCount() => Inputs.Count + Outputs.Count + 1;
 
         public void Sync(in List<Cell> Cells)  // Sync from Cells to VCIO dicts
         {
@@ -62,13 +70,19 @@ namespace Vertex
                 }
             }
             //Console.Write("66%... ");
-            for (int i = 0; i < ReadyIndicators.Count; i++)
+            //for (int i = 0; i < ReadyIndicators.Count; i++)
+            //{
+            //    if (ReadyIndicators.Values.ToArray()[i].Execute == true)
+            //    {
+            //        ReadyIndicators.Values.ToArray()[i].Value = Cells[(int)ReadyIndicators.Values.ToArray()[i].ID].Value;
+            //    }
+            //}
+
+            if (ReadyIndicator.content.Execute == true)
             {
-                if (ReadyIndicators.Values.ToArray()[i].Execute == true)
-                {
-                    ReadyIndicators.Values.ToArray()[i].Value = Cells[(int)ReadyIndicators.Values.ToArray()[i].ID].Value;
-                }
+                ReadyIndicator.content.Value = Cells[(int)ReadyIndicator.content.ID].Value;
             }
+
             //Console.WriteLine("100%");
         }
     }

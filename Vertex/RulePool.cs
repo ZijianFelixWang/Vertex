@@ -71,10 +71,12 @@ namespace Vertex
 
         public List<bool[]> ruleHistory = new List<bool[]>();
 
+
         // rulepool doesn't care about how to execute rules. it only knows that
         // a rule is constructed using 512 bits (see Evaluator.cs)
 
         // Random maker
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0044:Add readonly modifier", Justification = "<Pending>")]
         private Random rand = new Random(new Random(GetTimeStamp()).Next());
 
         //public bool[] Next(List<short> RankingHistory) => GetLatest();

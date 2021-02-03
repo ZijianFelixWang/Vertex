@@ -291,13 +291,22 @@ namespace Vertex
                         break;
 
                     case "ReadyIndicator":
-                        env.IO.ReadyIndicators.Add(ioNode.Attributes["id"].Value, new VCIOCell
+                        //env.IO.ReadyIndicators.Add(ioNode.Attributes["id"].Value, new VCIOCell
+                        //{
+                        //    Type = VCIOType.ReadyIndicator,
+                        //    ID = default,
+                        //    Name = ioNode.Attributes["name"].Value,
+                        //    Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
+                        //});
+
+                        env.IO.ReadyIndicator.name = ioNode.Attributes["id"].Value;
+                        env.IO.ReadyIndicator.content = new VCIOCell
                         {
                             Type = VCIOType.ReadyIndicator,
                             ID = default,
                             Name = ioNode.Attributes["name"].Value,
                             Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
-                        });
+                        };
 
                         break;
 
@@ -379,20 +388,33 @@ namespace Vertex
                                 //    } while (true);
                                 //}
 
-                                for (int index = 0; index < env.IO.ReadyIndicators.Count; index++)
+                                //for (int index = 0; index < env.IO.ReadyIndicators.Count; index++)
+                                //{
+                                //    do
+                                //    {
+                                //        int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
+                                //        if (usedLocations[loc] == false)
+                                //        {
+                                //            // Location usable
+                                //            env.IO.ReadyIndicators[env.IO.ReadyIndicators.Keys.ToArray()[index]].ID = (uint)loc;
+                                //            env.Matrix.Cells[loc] = env.IO.ReadyIndicators[env.IO.ReadyIndicators.Keys.ToArray()[index]];
+                                //            break;
+                                //        }
+                                //    } while (true);
+                                //}
+
+                                // distribute ready indicator (only one)
+                                do
                                 {
-                                    do
+                                    int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
+                                    if (usedLocations[loc] == false)
                                     {
-                                        int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
-                                        if (usedLocations[loc] == false)
-                                        {
-                                            // Location usable
-                                            env.IO.ReadyIndicators[env.IO.ReadyIndicators.Keys.ToArray()[index]].ID = (uint)loc;
-                                            env.Matrix.Cells[loc] = env.IO.ReadyIndicators[env.IO.ReadyIndicators.Keys.ToArray()[index]];
-                                            break;
-                                        }
-                                    } while (true);
-                                }
+                                        // Location usable
+                                        env.IO.ReadyIndicator.content.ID = (uint)loc;
+                                        env.Matrix.Cells[loc] = env.IO.ReadyIndicator.content;
+                                        break;
+                                    }
+                                } while (true);
 
                                 //foreach (var one in env.IO.ReadyIndicators)
                                 //{

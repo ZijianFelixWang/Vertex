@@ -14,7 +14,7 @@ using System.Linq;
 
 namespace Vertex
 {
-    class SVGExporter
+    static class SVGExporter
     {
         //private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
@@ -52,7 +52,7 @@ namespace Vertex
             }
         }
 #else
-        public void ExportEnvToSVG(ref SvgDocument document, in Environment env)
+        public static void ExportEnvToSVG(ref SvgDocument document, in Environment env)
         {
             //Logger.Info("Starting SVG export function...");
             ResourceHelper.Log("StartSVGExportInfo");
@@ -61,11 +61,11 @@ namespace Vertex
             short maxRank = env.Evaluator.RankingHistory.Max();
 
             float lastX = 10F;
-            float lastY = yConvert(maxRank, env.Evaluator.RankingHistory[0], 10F);
+            float lastY = YConvert(maxRank, env.Evaluator.RankingHistory[0], 10F);
 
             for (int i = 1; i < env.Evaluator.RankingHistory.Count; i++, lastX += 5F)
             {
-                float nowY = yConvert(maxRank, env.Evaluator.RankingHistory[i], 10F);
+                float nowY = YConvert(maxRank, env.Evaluator.RankingHistory[i], 10F);
 
                 SvgLine conn = new SvgLine
                 {
@@ -86,7 +86,7 @@ namespace Vertex
 
 #endif
 
-        private static float yConvert(short maxRank, short rank, float topMargin)
+        private static float YConvert(short maxRank, short rank, float topMargin)
         {
             /*
             Mechanism:

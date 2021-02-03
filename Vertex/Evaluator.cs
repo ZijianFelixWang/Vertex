@@ -38,6 +38,7 @@ namespace Vertex
             maxRanking = MaxRanking;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Performance", "CA1822:Mark members as static", Justification = "<Pending>")]
         public void Execute(ref IO IODefinition, ref Matrix MatrixDefinition, ref RulePool RulePoolDefinition)
         {
             if (IODefinition is null)
@@ -245,7 +246,11 @@ namespace Vertex
                     // ReadyIndicators
                     try
                     {
-                        defornot = IODefinition.ReadyIndicators.FirstOrDefault(p => p.Value.ID == idx).Value.ID;
+                        Dictionary<string, VCIOCell> ReadyIndicators = new Dictionary<string, VCIOCell>
+                        {
+                            { IODefinition.ReadyIndicator.name, IODefinition.ReadyIndicator.content }
+                        };
+                        defornot = ReadyIndicators.FirstOrDefault(p => p.Value.ID == idx).Value.ID;
                     }
                     catch (NullReferenceException)
                     {
@@ -409,7 +414,12 @@ namespace Vertex
             // ReadyIndicators
             try
             {
-                defornot = IODefinition.ReadyIndicators.FirstOrDefault(p => p.Value.ID == cellID).Value.ID;
+                //defornot = IODefinition.ReadyIndicators.FirstOrDefault(p => p.Value.ID == cellID).Value.ID;
+                Dictionary<string, VCIOCell> ReadyIndicators = new Dictionary<string, VCIOCell>
+                        {
+                            { IODefinition.ReadyIndicator.name, IODefinition.ReadyIndicator.content }
+                        };
+                defornot = ReadyIndicators.FirstOrDefault(p => p.Value.ID == cellID).Value.ID;
             }
             catch (NullReferenceException)
             {
@@ -418,7 +428,7 @@ namespace Vertex
             if (defornot != 0)
             {
                 // in inputs
-                execute = IODefinition.ReadyIndicators.FirstOrDefault(p => p.Value.ID == cellID).Value.Execute;
+                execute = IODefinition.ReadyIndicator.content.Execute;
             }
             #endregion
 
@@ -510,7 +520,8 @@ namespace Vertex
                     // RIBinder: IODefinition.ReadyIndicators[RIBinder.Indicator]
                     //switch (IODefinition.ReadyIndicators[RIBinder.Indicator].Value)
                     IODefinition.Sync(MatrixDefinition.Cells);
-                    switch (IODefinition.ReadyIndicators.FirstOrDefault(ri => ri.Value.Name == RIBinder.Indicator).Value.Value)
+                    //switch (IODefinition.ReadyIndicators.FirstOrDefault(ri => ri.Value.Name == RIBinder.Indicator).Value.Value)
+                    switch (IODefinition.ReadyIndicator.content.Value)
                     {
                         case true:
                             // To Execute: RIBinder.On
