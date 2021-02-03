@@ -286,7 +286,7 @@ namespace Vertex
 
         private static void ParseInput(ref Environment env, in XmlNode ioNode)
         {
-            env.IO.Inputs.Add(ioNode.Attributes["id"].Value, new VCIOCell
+            env.IO.Inputs.Add(ioNode.Attributes["name"].Value, new VCIOCell
             {
                 Type = VCIOType.Input,
                 ID = default,   // Here should not be default, should be its location in the grand list of Matrix.Cells
@@ -297,7 +297,7 @@ namespace Vertex
 
         private static void ParseOutput(ref Environment env, in XmlNode ioNode)
         {
-            env.IO.Outputs.Add(ioNode.Attributes["id"].Value, new VCIOCell
+            env.IO.Outputs.Add(ioNode.Attributes["name"].Value, new VCIOCell
             {
                 Type = VCIOType.Output,
                 ID = default,
@@ -316,7 +316,7 @@ namespace Vertex
             //    Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
             //});
 
-            env.IO.ReadyIndicator.name = ioNode.Attributes["id"].Value;
+            env.IO.ReadyIndicator.name = ioNode.Attributes["name"].Value;
             env.IO.ReadyIndicator.content = new VCIOCell
             {
                 Type = VCIOType.ReadyIndicator,
@@ -326,7 +326,7 @@ namespace Vertex
             };
         }
 
-        private static void RandomVCIODistribution(ref Environment env, in XmlNode ioNode)
+        private static void RandomVCIODistribution(ref Environment env)
         {
             List<bool> usedLocations = new List<bool>(env.Matrix.Cells.Capacity);
 
@@ -451,7 +451,7 @@ namespace Vertex
             switch (ioNode.Attributes["method"].Value)
             {
                 case "random":
-                    RandomVCIODistribution(ref env, ioNode);
+                    RandomVCIODistribution(ref env);
                     break;
 
                 default:

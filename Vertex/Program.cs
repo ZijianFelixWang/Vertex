@@ -37,6 +37,7 @@ namespace Vertex
 {
     class Program
     {
+        private const int RuleLength = 512;
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         static void Main(string[] args)
@@ -170,10 +171,10 @@ namespace Vertex
             // Initialize
             if (env.RulePool == null)
             {
-                env.RulePool = new RulePool(512);   // Sorry but this is a fixed value.
+                env.RulePool = new RulePool(RuleLength);   // Sorry but this is a fixed value.
             }
             env.Evaluator.ConfigCurrentRanking(0);
-            env.Evaluator.ConfigMaxRanking((short)(env.Evaluator.AnswerList.Parameters.Count - 1));
+            env.Evaluator.ConfigMaxRanking((short)(env.Evaluator.AnswerLists[0].Parameters.Count - 1));
 
             env.Evaluator.RankingHistory.Add(0);
             env.Evaluator.RankingHistory.Add(0);
