@@ -11,7 +11,7 @@ namespace Vertex
     {
         //private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
-        public static void ParseMetaData(ref Environment env, in XmlNode node)
+        private static void ParseMetaData(ref Environment env, in XmlNode node)
         {
             foreach (XmlNode metadataNode in node.ChildNodes)
             {
@@ -107,7 +107,162 @@ namespace Vertex
             }
         }
 
-        public static void ParseEvaluator(ref Environment env, in XmlNode node)
+        private static void ParseParameterList(ref Environment env, XmlNode evNode)
+        {
+            //_ = env.Evaluator.ParameterLists.FirstOrDefault(pl => pl.For == evNode.Attributes["for"].Value);
+            //_ = env.Evaluator.ParameterLists.FirstOrDefault(pl => pl.For == evNode.Attributes["for"].Value).Parameters;
+
+            // Now parses the parameters inside the list
+            foreach (XmlNode plChild in evNode.ChildNodes)
+            {
+                if (plChild.Name != "Value")
+                {
+                    throw new FormatException($"Undefined tag met in parameter section: {plChild.Name}");
+                }
+
+                ParameterItem temp = new ParameterItem
+                {
+                    Index = uint.Parse(plChild.Attributes["index"].Value),
+                    Type = plChild.Attributes["type"].Value,
+                    Value = bool.Parse(plChild.InnerText.Trim())
+                };
+
+                if (temp.Type != "Bool")
+                {
+                    throw new NotSupportedException("This version of Vertex only supports Boolean-typed cellular automations");
+                }
+
+                // DEBUG
+                //for (int d = 0; d < plChild.Attributes.Count; d++)
+                //{
+                //    Console.Write(plChild.Attributes[d].Value + " ");
+                //}
+                //Console.WriteLine("");
+                // DEBUG END
+
+                if (env.Evaluator.ParameterLists?.FirstOrDefault(pl => pl.For == plChild.ParentNode.Attributes["for"].Value)?.For == null)
+                {
+                    // required pl does not exist
+                    // so will create it!
+                    env.Evaluator.ParameterLists.Add(new ParameterList
+                    {
+                        For = evNode.Attributes["for"].Value,
+                        Parameters = new List<ParameterItem>()
+                    });
+                }
+
+                env.Evaluator.ParameterLists.FirstOrDefault(pl => pl.For == evNode.Attributes["for"].Value).Parameters.Add(temp);
+            }
+        }
+
+        private static void ParseAnswerList(ref Environment env, in XmlNode evNode)
+        {
+            //env.Evaluator.AnswerList.For = evNode.Attributes["for"].Value;
+
+            // Add this answerList later.
+            ParameterList apl = new ParameterList
+            {
+                For = evNode.Attributes["for"].Value
+            };
+
+            foreach (XmlNode alChild in evNode.ChildNodes)
+            {
+                switch (alChild.Name)
+                {
+                    case "Value":
+                        ParameterItem temp = new ParameterItem
+                        {
+                            Index = uint.Parse(alChild.Attributes["index"].Value),
+                            Type = alChild.Attributes["type"].Value,
+                            Value = bool.Parse(alChild.InnerText.Trim())
+                        };
+
+                        if (temp.Type != "Bool")
+                        {
+                            throw new NotSupportedException("This version of Vertex only supports Boolean-typed cellular automations");
+                        }
+
+                        if (apl.Parameters == null)
+                        {
+                            apl.Parameters = new List<ParameterItem>();
+                        }
+
+                        apl.Parameters.Add(temp);
+                        break;
+
+                    #region Commented code about Calculator tag.
+                    //case "Calculator":
+                    //    // To implement logic for parsing calculator!
+                    //    // In this version 'for' attribute is ignored.
+                    //    Console.WriteLine("[WARNING] Only one calculator is supported in this version of Vertex.");
+                    //    foreach (XmlNode calcNode in alChild.ChildNodes)
+                    //    {
+                    //        if (calcNode.Name != "Calculation")
+                    //        {
+                    //            throw new FormatException($"Undefined tag met in calculator definition section: {calcNode.Name}");
+                    //        }
+
+                    //        CalculationType toPerform = calcNode.Attributes["perform"].Value switch
+                    //        {
+                    //            "AND" => CalculationType.AND,
+                    //            "OR" => CalculationType.OR,
+                    //            "XOR" => CalculationType.XOR,
+                    //            "NOT" => CalculationType.NOT,
+                    //            "NAND" => CalculationType.NAND,
+                    //            "ADD" => CalculationType.ADD,
+                    //            "SUB" => CalculationType.SUB,
+                    //            "MUL" => CalculationType.MUL,
+                    //            "DIV" => CalculationType.DIV,
+                    //            _ => throw new NotSupportedException($"Unsupported calculation type: {calcNode.Attributes["perform"].Value}")
+                    //        };
+
+                    //        Console.WriteLine("[WARNING] In this experimental very first version, opr propery is ignored...");
+                    //        Console.WriteLine("[WARNING] Only one calculation is supported in this calculator version now...");
+
+                    //        Calculation tmp = new Calculation
+                    //        {
+                    //            ToPerform = toPerform
+                    //        };
+                    //    }
+                    //    break;
+                    #endregion
+
+                    default:
+                        throw new FormatException($"Undefined tag met in answer section: {alChild.Name}");
+                }
+            }
+
+            env.Evaluator.AnswerLists.Add(apl);
+        }
+
+        private static void ParseRIBinder(ref Environment env, in XmlNode evNode)
+        {
+            RIBinder rIBinder = new RIBinder
+            {
+                Indicator = evNode.Attributes["indicator"].Value,
+                Timeout = uint.Parse(evNode.Attributes["timeout"].Value),
+                On = evNode.Attributes["on"].Value switch
+                {
+                    "ToShiftNext" => RIBAction.ToShiftNext,
+                    "Continue" => RIBAction.Continue,
+                    "Break" => RIBAction.Break,
+                    "OK" => RIBAction.OK,
+                    _ => throw new NotSupportedException($"Unsupported RIBAction type: {evNode.Attributes["on"].Value}")
+                },
+                Off = evNode.Attributes["off"].Value switch
+                {
+                    "ToShiftNext" => RIBAction.ToShiftNext,
+                    "Continue" => RIBAction.Continue,
+                    "Break" => RIBAction.Break,
+                    "OK" => RIBAction.OK,
+                    _ => throw new NotSupportedException($"Unsupported RIBAction type: {evNode.Attributes["off"].Value}")
+                }
+            };
+
+            env.Evaluator.RIBinder = rIBinder;
+        }
+
+        private static void ParseEvaluator(ref Environment env, in XmlNode node)
         {
             env.Evaluator = new Evaluator();
             foreach (XmlNode evNode in node.ChildNodes)
@@ -115,151 +270,196 @@ namespace Vertex
                 switch (evNode.Name)
                 {
                     case "ParameterList":
-                        //_ = env.Evaluator.ParameterLists.FirstOrDefault(pl => pl.For == evNode.Attributes["for"].Value);
-                        //_ = env.Evaluator.ParameterLists.FirstOrDefault(pl => pl.For == evNode.Attributes["for"].Value).Parameters;
-
-                        // Now parses the parameters inside the list
-                        foreach (XmlNode plChild in evNode.ChildNodes)
-                        {
-                            if (plChild.Name != "Value")
-                            {
-                                throw new FormatException($"Undefined tag met in parameter section: {plChild.Name}");
-                            }
-
-                            ParameterItem temp = new ParameterItem
-                            {
-                                Index = uint.Parse(plChild.Attributes["index"].Value),
-                                Type = plChild.Attributes["type"].Value,
-                                Value = bool.Parse(plChild.InnerText.Trim())
-                            };
-
-                            if (temp.Type != "Bool")
-                            {
-                                throw new NotSupportedException("This version of Vertex only supports Boolean-typed cellular automations");
-                            }
-
-                            // DEBUG
-                            //for (int d = 0; d < plChild.Attributes.Count; d++)
-                            //{
-                            //    Console.Write(plChild.Attributes[d].Value + " ");
-                            //}
-                            //Console.WriteLine("");
-                            // DEBUG END
-
-                            if (env.Evaluator.ParameterLists?.FirstOrDefault(pl => pl.For == plChild.ParentNode.Attributes["for"].Value)?.For == null)
-                            {
-                                // required pl does not exist
-                                // so will create it!
-                                env.Evaluator.ParameterLists.Add(new ParameterList
-                                {
-                                    For = evNode.Attributes["for"].Value,
-                                    Parameters = new List<ParameterItem>()
-                                });
-                            }
-
-                            env.Evaluator.ParameterLists.FirstOrDefault(pl => pl.For == evNode.Attributes["for"].Value).Parameters.Add(temp);
-                        }
+                        ParseParameterList(ref env, evNode);
                         break;
 
                     case "AnswerList":
-                        env.Evaluator.AnswerList.For = evNode.Attributes["for"].Value;
-
-                        foreach (XmlNode alChild in evNode.ChildNodes)
-                        {
-                            switch (alChild.Name)
-                            {
-                                case "Value":
-                                    ParameterItem temp = new ParameterItem
-                                    {
-                                        Index = uint.Parse(alChild.Attributes["index"].Value),
-                                        Type = alChild.Attributes["type"].Value,
-                                        Value = bool.Parse(alChild.InnerText.Trim())
-                                    };
-
-                                    if (temp.Type != "Bool")
-                                    {
-                                        throw new NotSupportedException("This version of Vertex only supports Boolean-typed cellular automations");
-                                    }
-
-                                    if (env.Evaluator.AnswerList.Parameters == null)
-                                    {
-                                        env.Evaluator.AnswerList.Parameters = new List<ParameterItem>();
-                                    }
-
-                                    env.Evaluator.AnswerList.Parameters.Add(temp);
-                                    break;
-
-                                //case "Calculator":
-                                //    // To implement logic for parsing calculator!
-                                //    // In this version 'for' attribute is ignored.
-                                //    Console.WriteLine("[WARNING] Only one calculator is supported in this version of Vertex.");
-                                //    foreach (XmlNode calcNode in alChild.ChildNodes)
-                                //    {
-                                //        if (calcNode.Name != "Calculation")
-                                //        {
-                                //            throw new FormatException($"Undefined tag met in calculator definition section: {calcNode.Name}");
-                                //        }
-
-                                //        CalculationType toPerform = calcNode.Attributes["perform"].Value switch
-                                //        {
-                                //            "AND" => CalculationType.AND,
-                                //            "OR" => CalculationType.OR,
-                                //            "XOR" => CalculationType.XOR,
-                                //            "NOT" => CalculationType.NOT,
-                                //            "NAND" => CalculationType.NAND,
-                                //            "ADD" => CalculationType.ADD,
-                                //            "SUB" => CalculationType.SUB,
-                                //            "MUL" => CalculationType.MUL,
-                                //            "DIV" => CalculationType.DIV,
-                                //            _ => throw new NotSupportedException($"Unsupported calculation type: {calcNode.Attributes["perform"].Value}")
-                                //        };
-
-                                //        Console.WriteLine("[WARNING] In this experimental very first version, opr propery is ignored...");
-                                //        Console.WriteLine("[WARNING] Only one calculation is supported in this calculator version now...");
-
-                                //        Calculation tmp = new Calculation
-                                //        {
-                                //            ToPerform = toPerform
-                                //        };
-                                //    }
-                                //    break;
-
-                                default:
-                                    throw new FormatException($"Undefined tag met in answer section: {alChild.Name}");
-                            }
-                        }
+                        ParseAnswerList(ref env, evNode);
                         break;
 
                     case "RIBinder":
-                        RIBinder rIBinder = new RIBinder
-                        {
-                            Indicator = evNode.Attributes["indicator"].Value,
-                            Timeout = uint.Parse(evNode.Attributes["timeout"].Value),
-                            On = evNode.Attributes["on"].Value switch
-                            {
-                                "ToShiftNext" => RIBAction.ToShiftNext,
-                                "Continue" => RIBAction.Continue,
-                                "Break" => RIBAction.Break,
-                                "OK" => RIBAction.OK,
-                                _ => throw new NotSupportedException($"Unsupported RIBAction type: {evNode.Attributes["on"].Value}")
-                            },
-                            Off = evNode.Attributes["off"].Value switch
-                            {
-                                "ToShiftNext" => RIBAction.ToShiftNext,
-                                "Continue" => RIBAction.Continue,
-                                "Break" => RIBAction.Break,
-                                "OK" => RIBAction.OK,
-                                _ => throw new NotSupportedException($"Unsupported RIBAction type: {evNode.Attributes["off"].Value}")
-                            }
-                        };
-
-                        env.Evaluator.RIBinder = rIBinder;
+                        ParseRIBinder(ref env, evNode);
                         break;
                 }
             }
         }
 
-        public static void ParseIO(ref Environment env, in XmlNode node)
+        private static void ParseInput(ref Environment env, in XmlNode ioNode)
+        {
+            env.IO.Inputs.Add(ioNode.Attributes["id"].Value, new VCIOCell
+            {
+                Type = VCIOType.Input,
+                ID = default,   // Here should not be default, should be its location in the grand list of Matrix.Cells
+                Name = ioNode.Attributes["name"].Value,
+                Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
+            });
+        }
+
+        private static void ParseOutput(ref Environment env, in XmlNode ioNode)
+        {
+            env.IO.Outputs.Add(ioNode.Attributes["id"].Value, new VCIOCell
+            {
+                Type = VCIOType.Output,
+                ID = default,
+                Name = ioNode.Attributes["name"].Value,
+                Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
+            });
+        }
+
+        private static void ParseRI(ref Environment env, in XmlNode ioNode)
+        {
+            //env.IO.ReadyIndicators.Add(ioNode.Attributes["id"].Value, new VCIOCell
+            //{
+            //    Type = VCIOType.ReadyIndicator,
+            //    ID = default,
+            //    Name = ioNode.Attributes["name"].Value,
+            //    Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
+            //});
+
+            env.IO.ReadyIndicator.name = ioNode.Attributes["id"].Value;
+            env.IO.ReadyIndicator.content = new VCIOCell
+            {
+                Type = VCIOType.ReadyIndicator,
+                ID = default,
+                Name = ioNode.Attributes["name"].Value,
+                Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
+            };
+        }
+
+        private static void RandomVCIODistribution(ref Environment env, in XmlNode ioNode)
+        {
+            List<bool> usedLocations = new List<bool>(env.Matrix.Cells.Capacity);
+
+            // Initialize usedLocations array
+            for (int k = 0; k < usedLocations.Capacity; k++)
+            {
+                usedLocations.Add(false);
+            }
+
+            Random rand = new Random();
+
+            // ToDo: Convert to 'for'
+            for (int index = 0; index < env.IO.Inputs.Count; index++)
+            {
+                // env.IO.Inputs[env.IO.Inputs.Keys.ToArray()[index]].ID
+                do
+                {
+                    int loc = rand.Next(env.Matrix.Cells.Capacity);
+                    if (usedLocations[loc] == false)
+                    {
+                        // Location usable
+                        //Console.WriteLine("inputs -> location = " + loc);
+                        env.IO.Inputs[env.IO.Inputs.Keys.ToArray()[index]].ID = (uint)loc;
+                        env.Matrix.Cells[loc] = env.IO.Inputs[env.IO.Inputs.Keys.ToArray()[index]];
+                        break;
+                    }
+                } while (true);
+            }
+
+            //foreach (var one in env.IO.Inputs)
+            //{
+            //    do
+            //    {
+            //        int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
+            //        if (usedLocations[loc] == false)
+            //        {
+            //            // Location usable
+            //            one.Value.ID = (uint)loc;
+            //            env.Matrix.Cells[loc] = one.Value;
+            //            break;
+            //        }
+            //    } while (true);
+            //}
+
+            for (int index = 0; index < env.IO.Outputs.Count; index++)
+            {
+                do
+                {
+                    int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
+                    if (usedLocations[loc] == false)
+                    {
+                        // Location usable
+                        env.IO.Outputs[env.IO.Outputs.Keys.ToArray()[index]].ID = (uint)loc;
+                        env.Matrix.Cells[loc] = env.IO.Outputs[env.IO.Outputs.Keys.ToArray()[index]];
+                        break;
+                    }
+                } while (true);
+            }
+
+            //foreach (var one in env.IO.Outputs)
+            //{
+            //    do
+            //    {
+            //        int loc = rand.Next(0, env.Matrix.Cells.Capacity - 1);
+            //        if (usedLocations[loc] == false)
+            //        {
+            //            // Location usable
+            //            one.Value.ID = (uint)loc;
+            //            env.Matrix.Cells[loc] = one.Value;
+            //            break;
+            //        }
+            //    } while (true);
+            //}
+
+            //for (int index = 0; index < env.IO.ReadyIndicators.Count; index++)
+            //{
+            //    do
+            //    {
+            //        int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
+            //        if (usedLocations[loc] == false)
+            //        {
+            //            // Location usable
+            //            env.IO.ReadyIndicators[env.IO.ReadyIndicators.Keys.ToArray()[index]].ID = (uint)loc;
+            //            env.Matrix.Cells[loc] = env.IO.ReadyIndicators[env.IO.ReadyIndicators.Keys.ToArray()[index]];
+            //            break;
+            //        }
+            //    } while (true);
+            //}
+
+            // distribute ready indicator (only one)
+            do
+            {
+                int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
+                if (usedLocations[loc] == false)
+                {
+                    // Location usable
+                    env.IO.ReadyIndicator.content.ID = (uint)loc;
+                    env.Matrix.Cells[loc] = env.IO.ReadyIndicator.content;
+                    break;
+                }
+            } while (true);
+
+            //foreach (var one in env.IO.ReadyIndicators)
+            //{
+            //    do
+            //    {
+            //        int loc = rand.Next(0, env.Matrix.Cells.Capacity - 1);
+            //        if (usedLocations[loc] == false)
+            //        {
+            //            // Location usable
+            //            one.Value.ID = (uint)loc;
+            //            env.Matrix.Cells[loc] = one.Value;
+            //            break;
+            //        }
+            //    } while (true);
+            //}
+        }
+
+        private static void ParseAndDistributeVCIO(ref Environment env, in XmlNode ioNode)
+        {
+            // Configure the matrix now based on this property...
+            switch (ioNode.Attributes["method"].Value)
+            {
+                case "random":
+                    RandomVCIODistribution(ref env, ioNode);
+                    break;
+
+                default:
+                    throw new FormatException($"Unknown VCIODistribution: {ioNode.Attributes["method"].Value}. Try: \'Random\'");
+            }
+        }
+
+        private static void ParseIO(ref Environment env, in XmlNode node)
         {
             if (env.IO == null)
             {
@@ -271,170 +471,19 @@ namespace Vertex
                 switch (ioNode.Name)
                 {
                     case "Input":
-                        env.IO.Inputs.Add(ioNode.Attributes["id"].Value, new VCIOCell
-                        {
-                            Type = VCIOType.Input,
-                            ID = default,   // Here should not be default, should be its location in the grand list of Matrix.Cells
-                            Name = ioNode.Attributes["name"].Value,
-                            Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
-                        });
+                        ParseInput(ref env, ioNode);
                         break;
 
                     case "Output":
-                        env.IO.Outputs.Add(ioNode.Attributes["id"].Value, new VCIOCell
-                        {
-                            Type = VCIOType.Output,
-                            ID = default,
-                            Name = ioNode.Attributes["name"].Value,
-                            Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
-                        });
+                        ParseOutput(ref env, ioNode);
                         break;
 
                     case "ReadyIndicator":
-                        //env.IO.ReadyIndicators.Add(ioNode.Attributes["id"].Value, new VCIOCell
-                        //{
-                        //    Type = VCIOType.ReadyIndicator,
-                        //    ID = default,
-                        //    Name = ioNode.Attributes["name"].Value,
-                        //    Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
-                        //});
-
-                        env.IO.ReadyIndicator.name = ioNode.Attributes["id"].Value;
-                        env.IO.ReadyIndicator.content = new VCIOCell
-                        {
-                            Type = VCIOType.ReadyIndicator,
-                            ID = default,
-                            Name = ioNode.Attributes["name"].Value,
-                            Execute = bool.Parse(ioNode.Attributes["execute"].Value.Trim())
-                        };
-
+                        ParseRI(ref env, ioNode);
                         break;
 
                     case "VCIODistribution":
-                        // Configure the matrix now based on this property...
-                        switch (ioNode.Attributes["method"].Value)
-                        {
-                            case "random":
-                                List<bool> usedLocations = new List<bool>(env.Matrix.Cells.Capacity);
-
-                                // Initialize usedLocations array
-                                for (int k = 0; k < usedLocations.Capacity; k++)
-                                {
-                                    usedLocations.Add(false);
-                                }
-
-                                Random rand = new Random();
-
-                                // ToDo: Convert to 'for'
-                                for (int index = 0; index < env.IO.Inputs.Count; index++)
-                                {
-                                    // env.IO.Inputs[env.IO.Inputs.Keys.ToArray()[index]].ID
-                                    do
-                                    {
-                                        int loc = rand.Next(env.Matrix.Cells.Capacity);
-                                        if (usedLocations[loc] == false)
-                                        {
-                                            // Location usable
-                                            //Console.WriteLine("inputs -> location = " + loc);
-                                            env.IO.Inputs[env.IO.Inputs.Keys.ToArray()[index]].ID = (uint)loc;
-                                            env.Matrix.Cells[loc] = env.IO.Inputs[env.IO.Inputs.Keys.ToArray()[index]];
-                                            break;
-                                        }
-                                    } while (true);
-                                }
-
-                                //foreach (var one in env.IO.Inputs)
-                                //{
-                                //    do
-                                //    {
-                                //        int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
-                                //        if (usedLocations[loc] == false)
-                                //        {
-                                //            // Location usable
-                                //            one.Value.ID = (uint)loc;
-                                //            env.Matrix.Cells[loc] = one.Value;
-                                //            break;
-                                //        }
-                                //    } while (true);
-                                //}
-
-                                for (int index = 0; index < env.IO.Outputs.Count; index++)
-                                {
-                                    do
-                                    {
-                                        int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
-                                        if (usedLocations[loc] == false)
-                                        {
-                                            // Location usable
-                                            env.IO.Outputs[env.IO.Outputs.Keys.ToArray()[index]].ID = (uint)loc;
-                                            env.Matrix.Cells[loc] = env.IO.Outputs[env.IO.Outputs.Keys.ToArray()[index]];
-                                            break;
-                                        }
-                                    } while (true);
-                                }
-
-                                //foreach (var one in env.IO.Outputs)
-                                //{
-                                //    do
-                                //    {
-                                //        int loc = rand.Next(0, env.Matrix.Cells.Capacity - 1);
-                                //        if (usedLocations[loc] == false)
-                                //        {
-                                //            // Location usable
-                                //            one.Value.ID = (uint)loc;
-                                //            env.Matrix.Cells[loc] = one.Value;
-                                //            break;
-                                //        }
-                                //    } while (true);
-                                //}
-
-                                //for (int index = 0; index < env.IO.ReadyIndicators.Count; index++)
-                                //{
-                                //    do
-                                //    {
-                                //        int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
-                                //        if (usedLocations[loc] == false)
-                                //        {
-                                //            // Location usable
-                                //            env.IO.ReadyIndicators[env.IO.ReadyIndicators.Keys.ToArray()[index]].ID = (uint)loc;
-                                //            env.Matrix.Cells[loc] = env.IO.ReadyIndicators[env.IO.ReadyIndicators.Keys.ToArray()[index]];
-                                //            break;
-                                //        }
-                                //    } while (true);
-                                //}
-
-                                // distribute ready indicator (only one)
-                                do
-                                {
-                                    int loc = rand.Next(env.Matrix.Cells.Capacity - 1);
-                                    if (usedLocations[loc] == false)
-                                    {
-                                        // Location usable
-                                        env.IO.ReadyIndicator.content.ID = (uint)loc;
-                                        env.Matrix.Cells[loc] = env.IO.ReadyIndicator.content;
-                                        break;
-                                    }
-                                } while (true);
-
-                                //foreach (var one in env.IO.ReadyIndicators)
-                                //{
-                                //    do
-                                //    {
-                                //        int loc = rand.Next(0, env.Matrix.Cells.Capacity - 1);
-                                //        if (usedLocations[loc] == false)
-                                //        {
-                                //            // Location usable
-                                //            one.Value.ID = (uint)loc;
-                                //            env.Matrix.Cells[loc] = one.Value;
-                                //            break;
-                                //        }
-                                //    } while (true);
-                                //}
-                                break;
-
-                            default:
-                                throw new FormatException($"Unknown VCIODistribution: {ioNode.Attributes["method"].Value}. Try: \'Random\'");
-                        }
+                        ParseAndDistributeVCIO(ref env, ioNode);
                         break;
 
                     default:

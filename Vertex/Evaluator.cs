@@ -13,7 +13,8 @@ namespace Vertex
         //private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public List<ParameterList> ParameterLists = new List<ParameterList>();
-        public ParameterList AnswerList = new ParameterList();
+        //public ParameterList AnswerList = new ParameterList();
+        public List<ParameterList> AnswerLists = new List<ParameterList>();
         public RIBinder RIBinder;   // RI: Ready Indicator (cell)
 
         // Top point: How to implement <Calculator> tag...
@@ -123,7 +124,7 @@ namespace Vertex
                 Func<TECParam, Matrix> exec = TaskExecuteCell;
 
                 // Construct tasks
-                for (uint x = 0,  y = 0, t = 0; y < MatrixDefinition.Rows; x++, t++)
+                for (uint x = 0, y = 0, t = 0; y < MatrixDefinition.Rows; x++, t++)
                 {
                     if (x >= MatrixDefinition.Columns)
                     {
@@ -605,30 +606,47 @@ namespace Vertex
                 //bool result = bool.Parse(Calculator.Result);
 
                 // Fetch answer from answerlist
-                bool result = AnswerList.Parameters[Index].Value;
+                //bool[] results = AnswerList.Parameters[Index].Value;
+                List<bool> results = new List<bool>(AnswerLists.Count);
+                for (int m = 0; m < AnswerLists.Count; m++)
+                {
+                    // Note. here AnswerLists.Count means how many VCIO Output cells are there.
+                    results.Add(AnswerLists[m].Parameters[Index].Value);
+                }
 
                 // STEP 4
-                if (IODefinition.Outputs.First().Value.Value == result)
+                for (int resi = 0; resi < AnswerLists.Count; resi++)
                 {
-                    // Match!
-                    //Logger.Info($"For Index = {Index}, success = true, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
-                    ResourceHelper.Log("TestSuccessHint", Index.ToString());
-                    currentRanking++;   // Improve ranking
-                    //Logger.Info("+1 " + currentRanking);
-                    ResourceHelper.Log("RankingIncHint", currentRanking.ToString());
+                    // Now checking the RESIth VCIO output cell's answer...
+                    // More work to do Feb.3.2021:
+                    /*
+                     * The code below can only work well in the following conditions:
+                     * 
+                     * EnvParser can read AnswerLists correctly... including 'For' attributes, of AnsLst, PLst collections...
+                     */
+
+                    if (IODefinition.Outputs[AnswerLists[resi].For].Value == results[resi])
+                    {
+                        // Match!
+                        //Logger.Info($"For Index = {Index}, success = true, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
+                        ResourceHelper.Log("TestSuccessHint", Index.ToString());
+                        currentRanking++;   // Improve ranking
+                                            //Logger.Info("+1 " + currentRanking);
+                        ResourceHelper.Log("RankingIncHint", currentRanking.ToString());
+                    }
+                    else
+                    {
+                        // Not matches ;'(
+                        //Logger.Info($"For Index = {Index}, success = false, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
+                        ResourceHelper.Log("TestFailureHint", Index.ToString());
+                        success = false;
+                        currentRanking--;
+                        //Logger.Info("-1 " + currentRanking);
+                        ResourceHelper.Log("RankingDecHint", currentRanking.ToString());
+                    }
+                    //RankingHistory.Add(currentRanking);
+                    //Logger.Info("CR= " + currentRanking);
                 }
-                else
-                {
-                    // Not matches ;'(
-                    //Logger.Info($"For Index = {Index}, success = false, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
-                    ResourceHelper.Log("TestFailureHint", Index.ToString());
-                    success = false;
-                    currentRanking--;
-                    //Logger.Info("-1 " + currentRanking);
-                    ResourceHelper.Log("RankingDecHint", currentRanking.ToString());
-                }
-                //RankingHistory.Add(currentRanking);
-                //Logger.Info("CR= " + currentRanking);
                 ResourceHelper.Log("CurrentRankingHint", currentRanking.ToString());
 
                 //RulePoolDefinition.ruleHistory.Add(RulePoolDefinition.GetLatest());
