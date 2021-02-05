@@ -20,7 +20,7 @@ _____/   \___/ /_/     \__/  \___/ /_/|_|
 //#define __PRINT_UNSUCCESSFUL_CURRULE__
 //#define __SAVE_EVERY_STEP_SVG__
 //#define __USE_ASPOSE_API__
-#define __READKEY_AFTER_INITIALIZING_DYNAMICVIEWER__
+//#define __READKEY_AFTER_INITIALIZING_DYNAMICVIEWER__
 
 using System;
 using System.Xml;
