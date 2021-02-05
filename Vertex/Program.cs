@@ -179,6 +179,27 @@ namespace Vertex
             env.Evaluator.RankingHistory.Add(0);
             env.Evaluator.RankingHistory.Add(0);
 
+            // Initialize DynamicViewer
+            if (env.SVGProperty.UseDynamicViewer)
+            {
+                // DynamicViewer enabled.
+                //DynamicViewerHelper.ConfigureDynamicViewer(ViewerFilename, SVGSnapshotFilename)
+                // ToWrite: content of: Resources.Static.SVG_Lastest_Dynamic_Viewer
+                try
+                {
+                    string path = Path.GetTempPath() + "VxDynamicViewer.html";
+                    using StreamWriter sw = new StreamWriter(path);
+                    sw.WriteLine(Resources.Static.SVG_Lastest_Dynamic_Viewer);
+                    sw.Close();
+                    ResourceHelper.Log("DynamicViewerSuccessHint", path);
+                }
+                catch (Exception exp)
+                {
+                    //Logger.Error("Failed to open export file to save resRule: " + exp.Message);
+                    ResourceHelper.Log("ExportRuleErrorHint", exp.Message);
+                }
+            }
+
             //Logger.Info("Enter main loop...");
             ResourceHelper.Log(VxLogLevel.Info, "EnterMainLoopHint");
 

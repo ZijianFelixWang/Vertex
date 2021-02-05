@@ -135,6 +135,9 @@
   <data name="CVPHint" xml:space="preserve">
     <value>杂交点是</value>
   </data>
+  <data name="DynamicViewerSuccessHint" xml:space="preserve">
+    <value>成功地在此处初始化了动态SVG查看器:</value>
+  </data>
   <data name="EndXMLConstructionInfo" xml:space="preserve">
     <value>XML 构建完成.</value>
   </data>

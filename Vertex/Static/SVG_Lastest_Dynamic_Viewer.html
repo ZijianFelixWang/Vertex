@@ -4,12 +4,15 @@
 <head>
     <meta charset="utf-8" />
     <title>Vertex Latest SVG Live Preview (VxLSLP)</title>
+    <meta http-equiv="refresh" content="5"> <!-- Refresh every 5 seconds -->
 </head>
 <body>
     <h1> Vertex Latest SVG Live Preview for Vertex version 0.2 </h1>
-    <iframe id="display" src="rect.svg"></iframe>
+    <div id="toDisplayHint" name=""></div> <!-- C# code will complete this line later. -->
+    <!-- <iframe id="display" src=""></iframe> -->
     <script type="text/javascript">
-
+        var toLoad = document.getElementById("toDisplayHint").attributes["name"].value;
+        document.write("<iframe id=\"display\" src=\"" + toLoad + "\"></iframe>");  // Write the IFrame tag...
     </script>
 </body>
 </html>

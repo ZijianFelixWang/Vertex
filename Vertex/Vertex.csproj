@@ -60,6 +60,11 @@ Vertex (Vertex Evaluator-based Recursive automata Technology for EXpress cellula
       <AutoGen>True</AutoGen>
       <DependentUpon>en_US.resx</DependentUpon>
     </Compile>
+    <Compile Update="Resources\Static.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Static.resx</DependentUpon>
+    </Compile>
     <Compile Update="Resources\zh_CN.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -71,6 +76,10 @@ Vertex (Vertex Evaluator-based Recursive automata Technology for EXpress cellula
     <EmbeddedResource Update="Resources\en_US.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>en_US.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <EmbeddedResource Update="Resources\Static.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Static.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <EmbeddedResource Update="Resources\zh_CN.resx">
       <Generator>ResXFileCodeGenerator</Generator>

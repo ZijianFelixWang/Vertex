@@ -115,6 +115,15 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 成功地在此处初始化了动态SVG查看器:.
+        /// </summary>
+        internal static string DynamicViewerSuccessHint {
+            get {
+                return ResourceManager.GetString("DynamicViewerSuccessHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to XML 构建完成..
         /// </summary>
         internal static string EndXMLConstructionInfo {

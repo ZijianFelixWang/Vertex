@@ -115,6 +115,15 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Successfully initialized DynamicViewer at .
+        /// </summary>
+        internal static string DynamicViewerSuccessHint {
+            get {
+                return ResourceManager.GetString("DynamicViewerSuccessHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to XML construction done..
         /// </summary>
         internal static string EndXMLConstructionInfo {

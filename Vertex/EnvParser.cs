@@ -93,6 +93,10 @@ namespace Vertex
                         env.SVGProperty.Frequency = ushort.Parse(metadataNode.Attributes["val"].Value);
                         break;
 
+                    case "EnableDynamicViewer":
+                        env.SVGProperty.UseDynamicViewer = bool.Parse(metadataNode.Attributes["val"].Value);
+                        break;
+
                     case "ResultedRuleOutputFile":
                         env.ResultedRuleOutputFile = metadataNode.Attributes["val"].Value;
                         break;

@@ -24,7 +24,7 @@ namespace Vertex
         public Matrix Matrix;
 
         // Whether to use SVG export
-        public (bool Whether, string Where, ushort Frequency) SVGProperty = (false, "", 0);
+        public (bool Whether, string Where, ushort Frequency, bool UseDynamicViewer) SVGProperty = (false, "", 0, false);
 
         // Where to export resulted rule
         public string ResultedRuleOutputFile = "";
