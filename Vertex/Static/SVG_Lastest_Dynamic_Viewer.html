@@ -1,10 +1,8 @@
-﻿<!DOCTYPE html>
-
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+﻿<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
     <title>Vertex Latest SVG Live Preview (VxLSLP)</title>
-    <!--<meta http-equiv="refresh" content="5"/> <!-- Refresh every 5 seconds -->
+    <meta http-equiv="refresh" content="5"/> <!-- Refresh every 5 seconds -->
 </head>
 <body>
     <h1> Vertex Latest SVG Live Preview for Vertex version 0.2 </h1>
@@ -12,7 +10,9 @@
     <!-- <iframe id="display" src=""></iframe> -->
     <script type="text/javascript">
         var toLoad = document.getElementById("toDisplayHint").attributes["name"].value;
-        document.write("<iframe id=\"display\" src=\"" + toLoad + "\"></iframe>");  // Write the IFrame tag...
+        var iframeNode = document.createElement("iframe");
+        iframeNode.setAttribute("id", "display");
+        iframeNode.setAttribute("src", toLoad);
     </script>
 </body>
 </html>

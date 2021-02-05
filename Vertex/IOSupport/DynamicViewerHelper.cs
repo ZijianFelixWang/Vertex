@@ -9,10 +9,10 @@ namespace Vertex.IOSupport
         public static (bool success, string detail) ConfigureDynamicViewer(string ViewerFilename, string SVGSnapshotFilename)
         {
             // Load HTML
-            XElement xml;
+            XDocument xml;
             try
             {
-                xml = XElement.Load(ViewerFilename);
+                xml = XDocument.Load(ViewerFilename);
             }
             catch (Exception exp)
             {
@@ -20,9 +20,8 @@ namespace Vertex.IOSupport
             }
 
             // Configure HTML
-            var query = from p in xml.Elements("div")
-                        where (string)p.Attribute("ID") == "toDisplayHint"
-                        select p;
+            System.Collections.Generic.IEnumerable<XElement> query = from p in xml.Descendants("div")
+                                                                     select p;
 
             if (query.Any())
             {
@@ -31,7 +30,7 @@ namespace Vertex.IOSupport
             }
             else
             {
-                return (false, "XML query returned null");
+                //return (false, "XML query returned null");
             }
 
             // Saves HTML
