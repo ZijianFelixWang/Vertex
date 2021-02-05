@@ -115,6 +115,15 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to DynamicViewer 创建失败.
+        /// </summary>
+        internal static string DynamicViewerErrorHint {
+            get {
+                return ResourceManager.GetString("DynamicViewerErrorHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 成功地在此处初始化了动态SVG查看器:.
         /// </summary>
         internal static string DynamicViewerSuccessHint {

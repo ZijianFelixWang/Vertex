@@ -115,6 +115,15 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unexpected error happened when initializing DynamicViewer: .
+        /// </summary>
+        internal static string DynamicViewerErrorHint {
+            get {
+                return ResourceManager.GetString("DynamicViewerErrorHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Successfully initialized DynamicViewer at .
         /// </summary>
         internal static string DynamicViewerSuccessHint {

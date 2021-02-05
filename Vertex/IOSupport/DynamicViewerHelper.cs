@@ -6,7 +6,7 @@ namespace Vertex.IOSupport
 {
     static class DynamicViewerHelper
     {
-        public static bool ConfigureDynamicViewer(string ViewerFilename, string SVGSnapshotFilename)
+        public static (bool success, string detail) ConfigureDynamicViewer(string ViewerFilename, string SVGSnapshotFilename)
         {
             // Load HTML
             XElement xml;
@@ -14,9 +14,9 @@ namespace Vertex.IOSupport
             {
                 xml = XElement.Load(ViewerFilename);
             }
-            catch (Exception)
+            catch (Exception exp)
             {
-                return false;
+                return (false, "Failed to load " + ViewerFilename + " Details: " + exp.GetType().ToString() + "\t" + exp.Message);
             }
 
             // Configure HTML
@@ -31,12 +31,12 @@ namespace Vertex.IOSupport
             }
             else
             {
-                return false;
+                return (false, "XML query returned null");
             }
 
             // Saves HTML
             xml.Save(ViewerFilename);
-            return true;
+            return (true, "Success");
         }
     }
 }

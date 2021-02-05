@@ -99,6 +99,10 @@ namespace Vertex.IOSupport
                         env.SVGProperty.UseDynamicViewer = bool.Parse(metadataNode.Attributes["val"].Value);
                         break;
 
+                    case "DynamicViewerFile":
+                        env.SVGProperty.Location = metadataNode.Attributes["val"].Value;
+                        break;
+
                     case "ResultedRuleOutputFile":
                         env.ResultedRuleOutputFile = metadataNode.Attributes["val"].Value;
                         break;

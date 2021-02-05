@@ -135,6 +135,9 @@
   <data name="CVPHint" xml:space="preserve">
     <value>CrossOverPoint is </value>
   </data>
+  <data name="DynamicViewerErrorHint" xml:space="preserve">
+    <value>Unexpected error happened when initializing DynamicViewer: </value>
+  </data>
   <data name="DynamicViewerSuccessHint" xml:space="preserve">
     <value>Successfully initialized DynamicViewer at </value>
   </data>

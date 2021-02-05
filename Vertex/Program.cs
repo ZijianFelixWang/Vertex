@@ -20,6 +20,7 @@ _____/   \___/ /_/     \__/  \___/ /_/|_|
 //#define __PRINT_UNSUCCESSFUL_CURRULE__
 //#define __SAVE_EVERY_STEP_SVG__
 //#define __USE_ASPOSE_API__
+#define __READKEY_AFTER_INITIALIZING_DYNAMICVIEWER__
 
 using System;
 using System.Xml;
@@ -191,18 +192,30 @@ namespace Vertex
                 // ToWrite: content of: Resources.Static.SVG_Lastest_Dynamic_Viewer
                 try
                 {
-                    string path = Path.GetTempPath() + "VxDynamicViewer.html";
+                    string path = env.SVGProperty.Location;
                     using StreamWriter sw = new StreamWriter(path);
+                    Console.WriteLine(Resources.Static.SVG_Lastest_Dynamic_Viewer);
                     sw.WriteLine(Resources.Static.SVG_Lastest_Dynamic_Viewer);
                     sw.Close();
-                    IOSupport.DynamicViewerHelper.ConfigureDynamicViewer(path, env.SVGProperty.Where + "_latest.svg");
-                    ResourceHelper.Log("DynamicViewerSuccessHint", path);
+
+                    (bool success, string detail) = IOSupport.DynamicViewerHelper.ConfigureDynamicViewer(path, env.SVGProperty.Where + "_latest.svg");
+                    if (success)
+                    {
+                        ResourceHelper.Log("DynamicViewerSuccessHint", path);
+                    }
+                    else
+                    {
+                        ResourceHelper.Log("DynamicViewerErrorHint", detail);
+                    }
                 }
                 catch (Exception exp)
                 {
-                    //Logger.Error("Failed to open export file to save resRule: " + exp.Message);
-                    ResourceHelper.Log("ExportRuleErrorHint", exp.Message);
+                    ResourceHelper.Log("DynamicViewerErrorHint", exp.Message);
                 }
+
+#if __READKEY_AFTER_INITIALIZING_DYNAMICVIEWER__ && __DEBUG_MODE__
+                Console.ReadKey();
+#endif
             }
 
             //Logger.Info("Enter main loop...");
@@ -272,7 +285,7 @@ namespace Vertex
             //Console.WriteLine("-> Success!");
             //Logger.Info("Has successfully generated the executable rule.");
             ResourceHelper.Log("FinalSuccessInfo");
-            #region
+#region
             Console.Beep();
             Console.WriteLine();
             Console.WriteLine("-------------------------------------------------------------------");
@@ -314,7 +327,7 @@ namespace Vertex
             Console.WriteLine("-------------------------------------------------------------------");
             //Logger.Info("Press ENTER key to close this window.");
             ResourceHelper.Log("ExitConfirm");
-            #endregion
+#endregion
 #endif
 
 #if __FORCE_TO_FAIL__ && __DEBUG_MODE__
@@ -327,7 +340,7 @@ namespace Vertex
             if (env.SVGProperty.Whether == true)
             {
 #if __USE_ASPOSE_API__
-                #region
+#region
 #warning Multiculture resx file not implemented warning.
                 // Will export SVG file to destination
                 Logger.Info($"Exporting SVG file to " + env.SVGProperty.Where);
@@ -341,7 +354,7 @@ namespace Vertex
                 // Export now
                 svgDoc.Save(env.SVGProperty.Where);
                 Logger.Info("SVG file exported successfully.");
-                #endregion
+#endregion
 #else
                 // Use SVGLib now...
                 //Logger.Info($"Exporting SVG file to " + env.SVGProperty.Where);

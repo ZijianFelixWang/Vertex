@@ -135,6 +135,9 @@
   <data name="CVPHint" xml:space="preserve">
     <value>杂交点是</value>
   </data>
+  <data name="DynamicViewerErrorHint" xml:space="preserve">
+    <value>DynamicViewer 创建失败</value>
+  </data>
   <data name="DynamicViewerSuccessHint" xml:space="preserve">
     <value>成功地在此处初始化了动态SVG查看器:</value>
   </data>
