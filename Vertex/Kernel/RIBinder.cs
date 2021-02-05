@@ -2,7 +2,7 @@
 //using System.Collections.Generic;
 //using System.Text;
 
-namespace Vertex
+namespace Vertex.Kernel
 {
     class RIBinder
     {

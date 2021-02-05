@@ -2,7 +2,7 @@
 using Vertex.Resources;
 using NLog;
 
-namespace Vertex
+namespace Vertex.IOSupport
 {
     static class ResourceHelper
     {

@@ -1,10 +1,11 @@
-﻿using Vertex.Resources;
+﻿using Vertex.Kernel;
 using System.Security.Cryptography;
 using System.Xml.Linq;
 using System;
 using System.Collections.Generic;
+using Environment = Vertex.Kernel.Environment;
 
-namespace Vertex
+namespace Vertex.IOSupport
 {
     static class RuleExporter
     {

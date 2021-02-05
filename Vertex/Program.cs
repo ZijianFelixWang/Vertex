@@ -26,6 +26,10 @@ using System.Xml;
 // using System.Xml.Schema;
 using System.IO;
 using NLog;
+using Vertex.Kernel;
+using Environment = Vertex.Kernel.Environment;
+using ResourceHelper = Vertex.IOSupport.ResourceHelper;
+using VxLogLevel = Vertex.IOSupport.VxLogLevel;
 
 #if __USE_ASPOSE_API__
 using Aspose.Svg;
@@ -132,7 +136,7 @@ namespace Vertex
 
             // Parse document
             // document: <environment> - <metadata> ; <evaluator> ; <io>
-            env = EnvParser.ParseFromXML(document);
+            env = IOSupport.EnvParser.ParseFromXML(document);
 
             // Now document has been parsed, can use localized output now.
             // Setup resource helper
@@ -191,6 +195,7 @@ namespace Vertex
                     using StreamWriter sw = new StreamWriter(path);
                     sw.WriteLine(Resources.Static.SVG_Lastest_Dynamic_Viewer);
                     sw.Close();
+                    IOSupport.DynamicViewerHelper.ConfigureDynamicViewer(path, env.SVGProperty.Where + "_latest.svg");
                     ResourceHelper.Log("DynamicViewerSuccessHint", path);
                 }
                 catch (Exception exp)
@@ -243,7 +248,7 @@ namespace Vertex
                     SvgDocument svgDocument = new SvgDocument();
                     //SVGExporter exporter = new SVGExporter();
                     //exporter.ExportEnvToSVG(ref svgDocument, env);
-                    SVGExporter.ExportEnvToSVG(ref svgDocument, env);
+                    IOSupport.SVGExporter.ExportEnvToSVG(ref svgDocument, env);
                     svgDocument.Write(env.SVGProperty.Where + $"_{count}.svg");
                     svgDocument.Write(env.SVGProperty.Where + "_latest.svg");
                     //Logger.Info("SVGSnapshot file exported successfully.");
@@ -292,7 +297,7 @@ namespace Vertex
                 //}
 
                 //Here should export XML formatted.
-                RuleExporter.ExportRuleToXML(env, env.ResultedRuleOutputFile);
+                IOSupport.RuleExporter.ExportRuleToXML(env, env.ResultedRuleOutputFile);
 
                 //Logger.Info("Exported resulted rule to file successfully.");
                 ResourceHelper.Log("ExportRuleSuccessInfo");
@@ -343,7 +348,7 @@ namespace Vertex
                 ResourceHelper.Log("ExportSVGHint", env.SVGProperty.Where);
 
                 SvgDocument svgDocument = new SvgDocument();
-                SVGExporter.ExportEnvToSVG(ref svgDocument, env);
+                IOSupport.SVGExporter.ExportEnvToSVG(ref svgDocument, env);
                 svgDocument.Write(env.SVGProperty.Where);
                 //Logger.Info("SVG file exported successfully.");
                 ResourceHelper.Log("ExportSVGSuccessInfo");

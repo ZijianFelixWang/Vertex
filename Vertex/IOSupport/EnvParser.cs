@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using Vertex.Kernel;
+using Environment = Vertex.Kernel.Environment;
 //using NLog;
 //using Vertex.Resources;
 
-namespace Vertex
+namespace Vertex.IOSupport
 {
     static class EnvParser
     {

@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Xml.Linq;
 
-namespace Vertex
+namespace Vertex.IOSupport
 {
     static class DynamicViewerHelper
     {

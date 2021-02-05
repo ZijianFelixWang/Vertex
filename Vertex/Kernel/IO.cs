@@ -3,8 +3,9 @@ using System.Collections.Generic;
 //using System.Collections;
 using System.Linq;
 //using NLog;
+using ResourceHelper = Vertex.IOSupport.ResourceHelper;
 
-namespace Vertex
+namespace Vertex.Kernel
 {
     class IO
     {

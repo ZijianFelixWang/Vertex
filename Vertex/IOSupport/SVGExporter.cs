@@ -11,8 +11,9 @@ using System.Drawing;
 
 //using NLog;
 using System.Linq;
+using Vertex.Kernel;
 
-namespace Vertex
+namespace Vertex.IOSupport
 {
     static class SVGExporter
     {
