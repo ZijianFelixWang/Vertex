@@ -50,6 +50,7 @@ Vertex (Vertex Evaluator-based Recursive automata Technology for EXpress cellula
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="McMaster.Extensions.CommandLineUtils" Version="3.1.0" />
     <PackageReference Include="NLog" Version="4.7.7" />
     <PackageReference Include="Svg" Version="3.2.3" />
   </ItemGroup>

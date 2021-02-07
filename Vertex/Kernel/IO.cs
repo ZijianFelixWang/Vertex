@@ -26,7 +26,7 @@ namespace Vertex.Kernel
         public void UpdateCellsFromInput(ref List<Cell> Cells)   // Sync from VD[Input] to Cells
         {
             //Logger.Info("Syncing Cells data... ");
-            ResourceHelper.Log("CellsSyncInfo");
+            ResourceHelper.Log(IOSupport.VxLogLevel.Verbose, "CellsSyncInfo");
             // Will only sync Inputs list
             for (int i = 0; i < Inputs.Count; i++)
             {

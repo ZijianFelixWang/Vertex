@@ -106,11 +106,29 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Unsuccessful CurRule= .
+        /// </summary>
+        internal static string CurRulUnsuccessfulHint {
+            get {
+                return ResourceManager.GetString("CurRulUnsuccessfulHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to CrossOverPoint is .
         /// </summary>
         internal static string CVPHint {
             get {
                 return ResourceManager.GetString("CVPHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Drag&amp;Drop the source file here, and then hit enter. You can also enter the file&apos;s location manually..
+        /// </summary>
+        internal static string DragAndDropInfo {
+            get {
+                return ResourceManager.GetString("DragAndDropInfo", resourceCulture);
             }
         }
         
@@ -304,11 +322,29 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Some feature is not implemented now. Details:.
+        /// </summary>
+        internal static string NotImplementedHint {
+            get {
+                return ResourceManager.GetString("NotImplementedHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Something is not supported now. Details: .
         /// </summary>
         internal static string NotSupportedError {
             get {
                 return ResourceManager.GetString("NotSupportedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to No &apos;--feature&apos; parameter specified for program..
+        /// </summary>
+        internal static string NoValidParamError {
+            get {
+                return ResourceManager.GetString("NoValidParamError", resourceCulture);
             }
         }
         
@@ -340,6 +376,15 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to For help information. use &apos;vertex.exe --help&apos; instead..
+        /// </summary>
+        internal static string ReferToHelpIndication {
+            get {
+                return ResourceManager.GetString("ReferToHelpIndication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ResultedRule= .
         /// </summary>
         internal static string ResultedRuleHint {
@@ -354,6 +399,15 @@ namespace Vertex.Resources {
         internal static string RuleXMLSaveHint {
             get {
                 return ResourceManager.GetString("RuleXMLSaveHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Starting Evolve feature....
+        /// </summary>
+        internal static string StartEvolveVerbose {
+            get {
+                return ResourceManager.GetString("StartEvolveVerbose", resourceCulture);
             }
         }
         

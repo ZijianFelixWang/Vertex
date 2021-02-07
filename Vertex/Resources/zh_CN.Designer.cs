@@ -106,11 +106,29 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 此规则不成功: .
+        /// </summary>
+        internal static string CurRulUnsuccessfulHint {
+            get {
+                return ResourceManager.GetString("CurRulUnsuccessfulHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 杂交点是.
         /// </summary>
         internal static string CVPHint {
             get {
                 return ResourceManager.GetString("CVPHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 拖拽要使用的源文件至此然后按回车键, 你也可以手动输入..
+        /// </summary>
+        internal static string DragAndDropInfo {
+            get {
+                return ResourceManager.GetString("DragAndDropInfo", resourceCulture);
             }
         }
         
@@ -304,11 +322,29 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 程序功能不完整. 细节: .
+        /// </summary>
+        internal static string NotImplementedHint {
+            get {
+                return ResourceManager.GetString("NotImplementedHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 有些东西不被支持. 细节:.
         /// </summary>
         internal static string NotSupportedError {
             get {
                 return ResourceManager.GetString("NotSupportedError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 没有指定feature参数..
+        /// </summary>
+        internal static string NoValidParamError {
+            get {
+                return ResourceManager.GetString("NoValidParamError", resourceCulture);
             }
         }
         
@@ -340,6 +376,15 @@ namespace Vertex.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 使用 vertex.exe --help 来获取帮助..
+        /// </summary>
+        internal static string ReferToHelpIndication {
+            get {
+                return ResourceManager.GetString("ReferToHelpIndication", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 得到的规则是.
         /// </summary>
         internal static string ResultedRuleHint {
@@ -354,6 +399,15 @@ namespace Vertex.Resources {
         internal static string RuleXMLSaveHint {
             get {
                 return ResourceManager.GetString("RuleXMLSaveHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 开始进化流程.
+        /// </summary>
+        internal static string StartEvolveVerbose {
+            get {
+                return ResourceManager.GetString("StartEvolveVerbose", resourceCulture);
             }
         }
         

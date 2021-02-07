@@ -132,8 +132,14 @@
   <data name="CurrentRankingHint" xml:space="preserve">
     <value>CurrentRanking= </value>
   </data>
+  <data name="CurRulUnsuccessfulHint" xml:space="preserve">
+    <value>Unsuccessful CurRule= </value>
+  </data>
   <data name="CVPHint" xml:space="preserve">
     <value>CrossOverPoint is </value>
+  </data>
+  <data name="DragAndDropInfo" xml:space="preserve">
+    <value>Drag&amp;Drop the source file here, and then hit enter. You can also enter the file's location manually.</value>
   </data>
   <data name="DynamicViewerErrorHint" xml:space="preserve">
     <value>Unexpected error happened when initializing DynamicViewer: </value>
@@ -198,8 +204,14 @@
   <data name="NoNetworkingFeatureWarn" xml:space="preserve">
     <value>This version doesn't support networking. This line of configuration is ignored.</value>
   </data>
+  <data name="NotImplementedHint" xml:space="preserve">
+    <value>Some feature is not implemented now. Details:</value>
+  </data>
   <data name="NotSupportedError" xml:space="preserve">
     <value>Something is not supported now. Details: </value>
+  </data>
+  <data name="NoValidParamError" xml:space="preserve">
+    <value>No '--feature' parameter specified for program.</value>
   </data>
   <data name="ProduceRuleInfo" xml:space="preserve">
     <value>Producing new rule from history.</value>
@@ -210,11 +222,17 @@
   <data name="RankingIncHint" xml:space="preserve">
     <value>+1 </value>
   </data>
+  <data name="ReferToHelpIndication" xml:space="preserve">
+    <value>For help information. use 'vertex.exe --help' instead.</value>
+  </data>
   <data name="ResultedRuleHint" xml:space="preserve">
     <value>ResultedRule= </value>
   </data>
   <data name="RuleXMLSaveHint" xml:space="preserve">
     <value>Saving XML output to: </value>
+  </data>
+  <data name="StartEvolveVerbose" xml:space="preserve">
+    <value>Starting Evolve feature...</value>
   </data>
   <data name="StartSVGExportInfo" xml:space="preserve">
     <value>Starting SVG export function.</value>

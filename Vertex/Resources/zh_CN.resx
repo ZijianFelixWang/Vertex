@@ -132,8 +132,14 @@
   <data name="CurrentRankingHint" xml:space="preserve">
     <value>目前的分数是</value>
   </data>
+  <data name="CurRulUnsuccessfulHint" xml:space="preserve">
+    <value>此规则不成功: </value>
+  </data>
   <data name="CVPHint" xml:space="preserve">
     <value>杂交点是</value>
+  </data>
+  <data name="DragAndDropInfo" xml:space="preserve">
+    <value>拖拽要使用的源文件至此然后按回车键, 你也可以手动输入.</value>
   </data>
   <data name="DynamicViewerErrorHint" xml:space="preserve">
     <value>DynamicViewer 创建失败</value>
@@ -198,8 +204,14 @@
   <data name="NoNetworkingFeatureWarn" xml:space="preserve">
     <value>此版本不支持网络, 这行配置无效</value>
   </data>
+  <data name="NotImplementedHint" xml:space="preserve">
+    <value>程序功能不完整. 细节: </value>
+  </data>
   <data name="NotSupportedError" xml:space="preserve">
     <value>有些东西不被支持. 细节:</value>
+  </data>
+  <data name="NoValidParamError" xml:space="preserve">
+    <value>没有指定feature参数.</value>
   </data>
   <data name="ProduceRuleInfo" xml:space="preserve">
     <value>正在从历史生成新规则</value>
@@ -210,11 +222,17 @@
   <data name="RankingIncHint" xml:space="preserve">
     <value>+1 </value>
   </data>
+  <data name="ReferToHelpIndication" xml:space="preserve">
+    <value>使用 vertex.exe --help 来获取帮助.</value>
+  </data>
   <data name="ResultedRuleHint" xml:space="preserve">
     <value>得到的规则是</value>
   </data>
   <data name="RuleXMLSaveHint" xml:space="preserve">
     <value>正在保存XML输出至</value>
+  </data>
+  <data name="StartEvolveVerbose" xml:space="preserve">
+    <value>开始进化流程</value>
   </data>
   <data name="StartSVGExportInfo" xml:space="preserve">
     <value>开始SVG导出</value>

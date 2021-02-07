@@ -35,7 +35,7 @@ namespace Vertex.IOSupport
              * </RuleDef>
              */
 
-            ResourceHelper.Log("BeginConstructXMLInfo");
+            ResourceHelper.Log(VxLogLevel.Verbose, "BeginConstructXMLInfo");
 
             XDocument document = new XDocument();
             document.Add(new XElement("RuleDef", new XAttribute("VxVer", "0.2"),
@@ -47,11 +47,11 @@ namespace Vertex.IOSupport
                 new XElement("Output", new XAttribute("to", ""), new XComment(ResourceHelper.GetContentByKey("ExportRuleXMLCommentContent")))
                 ));
 
-            ResourceHelper.Log("EndXMLConstructionInfo");
+            ResourceHelper.Log(VxLogLevel.Verbose, "EndXMLConstructionInfo");
 
             document.Save(filename);
 
-            ResourceHelper.Log("RuleXMLSaveHint", filename);
+            ResourceHelper.Log(VxLogLevel.Verbose, "RuleXMLSaveHint", filename);
         }
 
         static private XElement[] GenerateVCIODistributionContent(in Environment env)

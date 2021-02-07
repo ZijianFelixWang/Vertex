@@ -56,7 +56,7 @@ namespace Vertex.IOSupport
         public static void ExportEnvToSVG(ref SvgDocument document, in Environment env)
         {
             //Logger.Info("Starting SVG export function...");
-            ResourceHelper.Log("StartSVGExportInfo");
+            ResourceHelper.Log(VxLogLevel.Verbose, "StartSVGExportInfo");
 
             // Get max rank
             short maxRank = env.Evaluator.RankingHistory.Max();

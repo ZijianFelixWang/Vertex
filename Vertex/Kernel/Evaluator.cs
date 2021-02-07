@@ -153,7 +153,7 @@ namespace Vertex.Kernel
                     //Console.WriteLine("Constructed task[" + t + "]");
                 }
                 //Logger.Info("Tasks construction ok.");
-                ResourceHelper.Log("TasksConstructedInfo");
+                ResourceHelper.Log(IOSupport.VxLogLevel.Verbose, "TasksConstructedInfo");
 
                 // Start tasks
                 foreach (var t in tasks)
@@ -165,7 +165,7 @@ namespace Vertex.Kernel
                 // Wait for the tasks
                 Task.WaitAll(tasks.ToArray());
                 //Logger.Info("All tasks OK.");
-                ResourceHelper.Log("TasksDoneInfo");
+                ResourceHelper.Log(IOSupport.VxLogLevel.Verbose, "TasksDoneInfo");
 
                 // Update from t.Result matrix
                 for (int ti = 0; ti < tasks.Count; ti++)
@@ -175,7 +175,7 @@ namespace Vertex.Kernel
                     MatrixDefinition.Cells[ti] = modified.Cells[ti];
                 }
                 //Logger.Info("All cells updated.");
-                ResourceHelper.Log("CellsUpdatedInfo");
+                ResourceHelper.Log(IOSupport.VxLogLevel.Verbose, "CellsUpdatedInfo");
             }
 
             // Print resulted matrix
@@ -630,7 +630,7 @@ namespace Vertex.Kernel
                     {
                         // Match!
                         //Logger.Info($"For Index = {Index}, success = true, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
-                        ResourceHelper.Log("TestSuccessHint", Index.ToString());
+                        ResourceHelper.Log(IOSupport.VxLogLevel.Verbose,"TestSuccessHint", Index.ToString());
                         currentRanking++;   // Improve ranking
                                             //Logger.Info("+1 " + currentRanking);
                         ResourceHelper.Log("RankingIncHint", currentRanking.ToString());
@@ -639,7 +639,7 @@ namespace Vertex.Kernel
                     {
                         // Not matches ;'(
                         //Logger.Info($"For Index = {Index}, success = false, output = {(IODefinition.Outputs.First().Value.Value ? 1 : 0)}, ans = {(result ? 1 : 0)}");
-                        ResourceHelper.Log("TestFailureHint", Index.ToString());
+                        ResourceHelper.Log(IOSupport.VxLogLevel.Verbose, "TestFailureHint", Index.ToString());
                         success = false;
                         currentRanking--;
                         //Logger.Info("-1 " + currentRanking);

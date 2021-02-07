@@ -51,7 +51,7 @@ namespace Vertex.Kernel
                 Cells[i].Value = false;
             }
             //Logger.Info("Automata status reseted successfully.");
-            ResourceHelper.Log("CCAResetedInfo");
+            ResourceHelper.Log(IOSupport.VxLogLevel.Verbose, "CCAResetedInfo");
         }
 
         public uint? FindCellIndexByLocation(int LocationX, int LocationY)

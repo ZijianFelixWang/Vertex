@@ -2,7 +2,7 @@
   "profiles": {
     "Vertex": {
       "commandName": "Project",
-      "commandLineArgs": "C:\\Users\\felix\\Documents\\projects\\Vertex\\Vertex\\ExampleEnv.xml",
+      "commandLineArgs": "--verbose-mode --feature Evolve --source ExampleEnv.xml",
       "workingDirectory": "C:\\Users\\felix\\Documents\\projects\\Vertex\\Vertex",
       "remoteDebugEnabled": false
     }

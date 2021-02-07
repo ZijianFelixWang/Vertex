@@ -9,6 +9,7 @@ namespace Vertex.IOSupport
         private static readonly Logger Logger = LogManager.GetCurrentClassLogger();
 
         public static string DefaultCulture = "en-US";
+        public static bool VerboseMode = false;
 
         public static string GetContentByKeyCulture(string key, string culture = "en-US") => culture.ToLower() switch
         {
@@ -30,7 +31,10 @@ namespace Vertex.IOSupport
             switch (level)
             {
                 case VxLogLevel.Debug:
-                    Logger.Debug(GetContentByKey(messageKey) + addition);
+                    if (VerboseMode)
+                    {
+                        Logger.Debug(GetContentByKey(messageKey) + addition);
+                    }
                     break;
                 case VxLogLevel.Info:
                     Logger.Info(GetContentByKey(messageKey) + addition);
@@ -44,12 +48,18 @@ namespace Vertex.IOSupport
                 case VxLogLevel.Fatal:
                     Logger.Fatal(GetContentByKey(messageKey) + addition);
                     break;
+                case VxLogLevel.Verbose:
+                    if (VerboseMode)
+                    {
+                        Logger.Info(GetContentByKey(messageKey) + addition);
+                    }
+                    break;
             }
         }
     }
 
     enum VxLogLevel
     {
-        Debug, Info, Warn, Error, Fatal
+        Debug, Info, Warn, Error, Fatal, Verbose
     }
 }
