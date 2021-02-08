@@ -63,6 +63,7 @@ namespace Vertex
             if (string.IsNullOrEmpty(Feature))
             {
                 ResourceHelper.Log(IOSupport.VxLogLevel.Fatal, "NoValidParamError");
+                Environment.Exit(-1);
             }
 
             Features.FeatureLoader.LoadFeature(Feature, EnvProfile);

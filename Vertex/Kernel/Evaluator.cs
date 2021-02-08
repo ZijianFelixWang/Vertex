@@ -546,7 +546,7 @@ namespace Vertex.Kernel
 
                                     //Console.ForegroundColor = fgBak;
                                     //Console.BackgroundColor = bgBak;
-                                    Console.WriteLine();
+                                    //Console.WriteLine();
 
                                     Execute(ref IODefinition, ref MatrixDefinition, ref RulePoolDefinition);
                                     break;
@@ -583,7 +583,7 @@ namespace Vertex.Kernel
 
                                     //Console.ForegroundColor = fgBak;
                                     //Console.BackgroundColor = bgBak;
-                                    Console.WriteLine();
+                                    //Console.WriteLine();
                                     //Console.BackgroundColor = bgBak;
                                     Execute(ref IODefinition, ref MatrixDefinition, ref RulePoolDefinition);
                                     break;
